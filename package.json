@@ -1,0 +1,45 @@
+{
+  "name": "my-router-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "dev": "vite --port=3000",
+    "build": "vite build",
+    "serve": "vite preview",
+    "start": "vite"
+  },
+  "devDependencies": {
+    "@tanstack/router-plugin": "^1.78.3",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
+    "@reduxjs/toolkit": "^1.9.7",
+    "@tanstack/react-router": "^1.78.3",
+    "@tanstack/router-core": "^1.78.3",
+    "@tanstack/router-devtools": "^1.78.3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.555.0",
+    "normalize.css": "^8.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^8.1.3",
+    "recharts": "^3.5.1",
+    "redux": "^4.2.1",
+    "redux-persist": "^6.0.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.6.3"
+  }
+}
