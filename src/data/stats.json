@@ -1,0 +1,44 @@
+{
+  "dashboardStats": [
+    {
+      "id": "requests",
+      "title": "Total Requests",
+      "value": "2.4M",
+      "change": "12.5%",
+      "isPositive": true,
+      "icon": "trending-up",
+      "iconColorClass": "text-blue-600 dark:text-blue-400",
+      "iconBgClass": "bg-blue-100/50 dark:bg-blue-900/30"
+    },
+    {
+      "id": "tokens",
+      "title": "Total Tokens",
+      "value": "1.2B",
+      "change": "8.2%",
+      "isPositive": true,
+      "icon": "database",
+      "iconColorClass": "text-purple-600 dark:text-purple-400",
+      "iconBgClass": "bg-purple-100/50 dark:bg-purple-900/30"
+    },
+    {
+      "id": "error-rate",
+      "title": "Error Rate",
+      "value": "0.01%",
+      "change": "0.02%",
+      "isPositive": true,
+      "icon": "alert-circle",
+      "iconColorClass": "text-rose-600 dark:text-rose-400",
+      "iconBgClass": "bg-rose-100/50 dark:bg-rose-900/30"
+    },
+    {
+      "id": "active-users",
+      "title": "Active Users",
+      "value": "120",
+      "change": "2.4%",
+      "isPositive": false,
+      "icon": "users",
+      "iconColorClass": "text-amber-600 dark:text-amber-400",
+      "iconBgClass": "bg-amber-100/50 dark:bg-amber-900/30"
+    }
+  ]
+}

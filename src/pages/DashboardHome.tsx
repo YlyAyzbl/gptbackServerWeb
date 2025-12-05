@@ -8,7 +8,17 @@ import {
   ArrowUp,
   ArrowDown
 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, CHART_TOOLTIP_STYLE, CHART_ITEM_STYLE } from '../lib/utils';
+import { useModels } from '../hooks/useModels';
+import { useStats } from '../hooks/useStats';
+
+// Icon mapping
+const iconMap: Record<string, React.ReactNode> = {
+  'trending-up': <TrendingUp className="w-6 h-6" />,
+  'database': <Database className="w-6 h-6" />,
+  'alert-circle': <AlertCircle className="w-6 h-6" />,
+  'users': <Users className="w-6 h-6" />,
+};
 
 // Interfaces
 interface StatCardProps {
@@ -21,7 +31,7 @@ interface StatCardProps {
   iconBgClass: string;
 }
 
-// Components
+// Components (moved to separate file for better organization)
 const StatCard: React.FC<StatCardProps> = ({ title, value, change, isPositive, icon, iconColorClass, iconBgClass }) => (
   <div className="glass rounded-2xl p-6 flex flex-col justify-between h-full hover:scale-[1.02] transition-transform duration-300">
     <div className="flex justify-between items-start mb-4">
@@ -45,45 +55,6 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, isPositive, i
   </div>
 );
 
-// Mock Data
-const stats = [
-  {
-    title: 'Total Requests',
-    value: '2.4M',
-    change: '12.5%',
-    isPositive: true,
-    icon: <TrendingUp className="w-6 h-6" />,
-    iconColorClass: 'text-blue-600 dark:text-blue-400',
-    iconBgClass: 'bg-blue-100/50 dark:bg-blue-900/30'
-  },
-  {
-    title: 'Total Tokens',
-    value: '1.2B',
-    change: '8.2%',
-    isPositive: true,
-    icon: <Database className="w-6 h-6" />,
-    iconColorClass: 'text-purple-600 dark:text-purple-400',
-    iconBgClass: 'bg-purple-100/50 dark:bg-purple-900/30'
-  },
-  {
-    title: 'Error Rate',
-    value: '0.01%',
-    change: '0.02%',
-    isPositive: true,
-    icon: <AlertCircle className="w-6 h-6" />,
-    iconColorClass: 'text-rose-600 dark:text-rose-400',
-    iconBgClass: 'bg-rose-100/50 dark:bg-rose-900/30'
-  },
-  {
-    title: 'Active Users',
-    value: '120',
-    change: '2.4%',
-    isPositive: false,
-    icon: <Users className="w-6 h-6" />,
-    iconColorClass: 'text-amber-600 dark:text-amber-400',
-    iconBgClass: 'bg-amber-100/50 dark:bg-amber-900/30'
-  },
-];
 
 const trendData = [
   { date: '12/01', requests: 4000, tokens: 240000 },
@@ -95,20 +66,28 @@ const trendData = [
   { date: '12/07', requests: 3490, tokens: 430000 },
 ];
 
-const modelData = [
-  { name: 'GPT-4', value: 400, requests: '12,450', tokens: '450K' },
-  { name: 'GPT-3.5', value: 300, requests: '8,200', tokens: '300K' },
-  { name: 'Claude 3', value: 300, requests: '6,100', tokens: '280K' },
-  { name: 'Gemini Pro', value: 200, requests: '4,500', tokens: '150K' },
-];
-
-// Modern, vibrant colors for the donut chart
-const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#14b8a6'];
+// Remove hardcoded data - will use config instead
 
 export default function DashboardHome() {
+  const { models, chartColors } = useModels();
+  const { dashboardStats } = useStats();
   const [period, setPeriod] = React.useState('7');
   const [granularity, setGranularity] = React.useState('day');
   const [modelPeriod, setModelPeriod] = React.useState('daily');
+
+  // Transform model data for the chart
+  const modelData = models.map(model => ({
+    name: model.name,
+    value: model.stats.percentage,
+    requests: model.stats.requests,
+    tokens: model.stats.tokens,
+  }));
+
+  // Transform stats data with icons
+  const stats = dashboardStats.map(stat => ({
+    ...stat,
+    icon: iconMap[stat.icon],
+  }));
 
   return (
     <div className="space-y-8">
@@ -210,14 +189,8 @@ export default function DashboardHome() {
                   tick={{ fontSize: 12, fontWeight: 500 }}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(0,0,0,0.05)',
-                    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
-                  }}
-                  itemStyle={{ color: '#1e293b' }}
+                  contentStyle={CHART_TOOLTIP_STYLE}
+                  itemStyle={CHART_ITEM_STYLE}
                   labelStyle={{ color: '#64748b' }}
                 />
                 <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
@@ -261,7 +234,7 @@ export default function DashboardHome() {
                   {modelData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+                      fill={chartColors[index % chartColors.length]}
                       stroke="transparent"
                       strokeWidth={0}
                       className="hover:opacity-80 transition-opacity cursor-pointer"
@@ -269,14 +242,8 @@ export default function DashboardHome() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(0,0,0,0.05)',
-                    color: '#1e293b'
-                  }}
-                  itemStyle={{ color: '#1e293b' }}
+                  contentStyle={CHART_TOOLTIP_STYLE}
+                  itemStyle={CHART_ITEM_STYLE}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -288,15 +255,15 @@ export default function DashboardHome() {
           </div>
 
           <div className="mt-8 space-y-4">
-            {modelData.map((item, index) => (
-              <div key={item.name} className="flex items-center justify-between text-sm p-3 rounded-xl hover:bg-white/10 transition-colors border border-transparent hover:border-white/10">
+            {models.map((model, index) => (
+              <div key={model.id} className="flex items-center justify-between text-sm p-3 rounded-xl hover:bg-white/10 transition-colors border border-transparent hover:border-white/10">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                  <span className="font-bold text-foreground">{item.name}</span>
+                  <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: chartColors[index % chartColors.length] }} />
+                  <span className="font-bold text-foreground">{model.name}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-bold text-foreground/90">{item.requests}</span>
-                  <span className="text-muted-foreground font-mono text-xs w-8 text-right">{Math.round((item.value / 1200) * 100)}%</span>
+                  <span className="font-bold text-foreground/90">{model.stats.requests}</span>
+                  <span className="text-muted-foreground font-mono text-xs w-8 text-right">{model.stats.percentage}%</span>
                 </div>
               </div>
             ))}

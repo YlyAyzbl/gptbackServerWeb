@@ -1,0 +1,62 @@
+{
+  "mainMenu": [
+    {
+      "id": "home",
+      "text": "首页",
+      "icon": "home",
+      "path": "/"
+    },
+    {
+      "id": "dashboard",
+      "text": "仪表盘",
+      "icon": "layout-dashboard",
+      "path": "/dashboard"
+    },
+    {
+      "id": "services",
+      "text": "我的服务",
+      "icon": "wrench",
+      "path": "/services"
+    },
+    {
+      "id": "support",
+      "text": "工单支持",
+      "icon": "headphones",
+      "path": "/support"
+    },
+    {
+      "id": "announcements",
+      "text": "系统公告",
+      "icon": "megaphone",
+      "path": "/announcements"
+    },
+    {
+      "id": "settings",
+      "text": "个人设置",
+      "icon": "settings",
+      "path": "/settings"
+    }
+  ],
+  "settingsTabs": [
+    {
+      "id": "profile",
+      "label": "Profile",
+      "icon": "user"
+    },
+    {
+      "id": "security",
+      "label": "Security",
+      "icon": "lock"
+    },
+    {
+      "id": "billing",
+      "label": "Billing",
+      "icon": "credit-card"
+    },
+    {
+      "id": "notifications",
+      "label": "Notifications",
+      "icon": "bell"
+    }
+  ]
+}

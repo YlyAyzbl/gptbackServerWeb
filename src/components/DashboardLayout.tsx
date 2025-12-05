@@ -12,8 +12,19 @@ import {
   Sun
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { useMenu } from '../hooks/useMenu';
 import { cn } from '../lib/utils';
 import { Drawer } from '@mui/material';
+
+// Icon mapping for menu items
+const menuIconMap: Record<string, React.ReactNode> = {
+  'home': <Home className="w-5 h-5" />,
+  'layout-dashboard': <LayoutDashboard className="w-5 h-5" />,
+  'wrench': <Wrench className="w-5 h-5" />,
+  'headphones': <HeadphonesIcon className="w-5 h-5" />,
+  'megaphone': <Megaphone className="w-5 h-5" />,
+  'settings': <Settings className="w-5 h-5" />,
+};
 
 const drawerWidth = 260;
 
@@ -25,6 +36,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { themeMode, toggleColorMode } = useTheme();
+  const { mainMenu } = useMenu();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -35,14 +47,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return <Sun className="w-5 h-5" />;
   };
 
-  const menuItems = [
-    { text: '首页', icon: <Home className="w-5 h-5" />, path: '/' },
-    { text: '仪表盘', icon: <LayoutDashboard className="w-5 h-5" />, path: '/dashboard' },
-    { text: '我的服务', icon: <Wrench className="w-5 h-5" />, path: '/services' },
-    { text: '工单支持', icon: <HeadphonesIcon className="w-5 h-5" />, path: '/support' },
-    { text: '系统公告', icon: <Megaphone className="w-5 h-5" />, path: '/announcements' },
-    { text: '个人设置', icon: <Settings className="w-5 h-5" />, path: '/settings' },
-  ];
+  // Transform menu items with icons
+  const menuItems = mainMenu.map(item => ({
+    text: item.text,
+    icon: menuIconMap[item.icon],
+    path: item.path,
+  }));
 
   const SidebarContent = () => (
     <div className="h-full flex flex-col bg-card/50 backdrop-blur-xl border-r border-border text-card-foreground">

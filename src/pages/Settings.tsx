@@ -1,16 +1,24 @@
 import React from 'react';
 import { User, Lock, Bell, CreditCard, Save, Check } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useMenu } from '../hooks/useMenu';
+
+// Icon mapping for settings tabs
+const settingsIconMap: Record<string, React.ReactNode> = {
+  'user': <User className="w-4 h-4" />,
+  'lock': <Lock className="w-4 h-4" />,
+  'credit-card': <CreditCard className="w-4 h-4" />,
+  'bell': <Bell className="w-4 h-4" />,
+};
 
 export default function Settings() {
     const [activeTab, setActiveTab] = React.useState('profile');
+    const { settingsTabs } = useMenu();
 
-    const tabs = [
-        { id: 'profile', label: 'Profile', icon: <User className="w-4 h-4" /> },
-        { id: 'security', label: 'Security', icon: <Lock className="w-4 h-4" /> },
-        { id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> },
-        { id: 'notifications', label: 'Notifications', icon: <Bell className="w-4 h-4" /> },
-    ];
+    const tabs = settingsTabs.map(tab => ({
+        ...tab,
+        icon: settingsIconMap[tab.icon],
+    }));
 
     return (
         <div className="space-y-8">
@@ -66,7 +74,7 @@ export default function Settings() {
                                     <input
                                         type="text"
                                         defaultValue="Tom Cook"
-                                        className="flex h-11 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                                        className="input-base"
                                     />
                                 </div>
 
@@ -75,25 +83,25 @@ export default function Settings() {
                                     <input
                                         type="email"
                                         defaultValue="tom.cook@example.com"
-                                        className="flex h-11 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                                        className="input-base"
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
                                     <label className="text-sm font-medium text-foreground">Bio</label>
                                     <textarea
-                                        className="flex min-h-[120px] w-full rounded-xl border border-input bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                                        className="input-base min-h-[120px]"
                                         defaultValue="Passionate about building great user experiences and scalable applications."
                                     ></textarea>
                                 </div>
                             </div>
 
                             <div className="pt-4 flex items-center gap-4">
-                                <button className="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:scale-105 transition-all">
+                                <button className="btn-primary">
                                     <Save className="w-4 h-4 mr-2" />
                                     Save Changes
                                 </button>
-                                <button className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+                                <button className="btn-secondary">
                                     Cancel
                                 </button>
                             </div>
@@ -109,15 +117,15 @@ export default function Settings() {
                             <div className="grid gap-5">
                                 <div className="grid gap-2">
                                     <label className="text-sm font-medium">Current Password</label>
-                                    <input type="password" placeholder="••••••••" className="flex h-11 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" />
+                                    <input type="password" placeholder="••••••••" className="input-base" />
                                 </div>
                                 <div className="grid gap-2">
                                     <label className="text-sm font-medium">New Password</label>
-                                    <input type="password" className="flex h-11 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" />
+                                    <input type="password" className="input-base" />
                                 </div>
                                 <div className="grid gap-2">
                                     <label className="text-sm font-medium">Confirm New Password</label>
-                                    <input type="password" className="flex h-11 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" />
+                                    <input type="password" className="input-base" />
                                 </div>
                                 <button className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-lg mt-2">Update Password</button>
                             </div>

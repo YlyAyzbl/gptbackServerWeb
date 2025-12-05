@@ -107,6 +107,20 @@
   .glass-card {
     @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm hover:shadow-lg transition-all duration-300;
   }
+
+  /* Input 样式统一 */
+  .input-base {
+    @apply flex h-11 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all;
+  }
+
+  /* Button 样式统一 */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-primary px-8 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:scale-105 transition-all;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all;
+  }
 }
 
 /* Custom Scrollbar */
