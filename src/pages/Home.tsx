@@ -6,19 +6,19 @@ export default function Home() {
     return (
         <div className="space-y-8 max-w-6xl mx-auto">
             {/* Hero Section */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-10 sm:p-16 text-center text-white shadow-2xl">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-10 sm:p-16 text-center shadow-2xl">
                 <div className="relative z-10">
-                    <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                         Welcome to 88code
                     </h1>
-                    <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
                         Your centralized hub for AI model management, token tracking, and high-performance API services.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/dashboard" className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-primary text-primary-foreground font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-primary/25">
                             Go to Dashboard <ArrowRight className="ml-2 w-5 h-5" />
                         </Link>
-                        <Link to="/services" className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white/10 backdrop-blur-md text-white font-bold text-lg hover:bg-white/20 transition-colors border border-white/10">
+                        <Link to="/services" className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-slate-200/50 dark:bg-white/10 backdrop-blur-md text-slate-800 dark:text-white font-bold text-lg hover:bg-slate-300/50 dark:hover:bg-white/20 transition-colors border border-slate-300/50 dark:border-white/10">
                             Browse Services
                         </Link>
                     </div>
@@ -26,8 +26,8 @@ export default function Home() {
 
                 {/* Background Decorations */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/20 blur-[100px] rounded-full"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/20 blur-[100px] rounded-full"></div>
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/10 dark:bg-purple-500/20 blur-[100px] rounded-full"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 dark:bg-blue-500/20 blur-[100px] rounded-full"></div>
                 </div>
             </div>
 
