@@ -31,6 +31,12 @@ func init() {
 	db.AutoMigrate(&User{})
 
 	DB = db
+
+	// 初始化默认测试账号
+	InitializeDefaultUsers()
+
+	// 打印测试账号信息
+	PrintTestAccounts()
 }
 
 func GetDatabaseSizeInMB() (float64, error) {
