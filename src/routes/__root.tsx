@@ -1,4 +1,4 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { Outlet, createRootRoute, useLocation } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import DashboardLayout from '../components/DashboardLayout'
 
@@ -7,10 +7,19 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
   return (
-    <DashboardLayout>
-      <Outlet />
+    <>
+      {isAuthPage ? (
+        <Outlet />
+      ) : (
+        <DashboardLayout>
+          <Outlet />
+        </DashboardLayout>
+      )}
       <TanStackRouterDevtools position="bottom-right" />
-    </DashboardLayout>
+    </>
   );
 }

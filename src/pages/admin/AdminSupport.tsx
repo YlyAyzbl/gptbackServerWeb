@@ -1,6 +1,6 @@
-import React from 'react';
-import { Search, Edit2, Trash2, HeadphonesIcon, MessageSquare, CheckCircle2, Clock } from 'lucide-react';
-import { Select, MenuItem } from '@mui/material';
+import React, { useState } from 'react';
+import { Search, Edit2, Trash2, HeadphonesIcon, MessageSquare, CheckCircle2, Clock, X, User, Shield } from 'lucide-react';
+import { Select, MenuItem, Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import { cn } from '../../lib/utils';
 
 interface Ticket {
@@ -10,13 +10,54 @@ interface Ticket {
   priority: 'Low' | 'Medium' | 'High' | 'Urgent';
   status: 'Open' | 'In Progress' | 'Resolved' | 'Closed';
   lastUpdate: string;
+  conversation?: { sender: string; role: 'user' | 'admin'; message: string; time: string }[];
 }
 
-const tickets: Ticket[] = [
-  { id: 'T-1024', subject: 'Cannot access GPT-4 API', user: 'alice@example.com', priority: 'High', status: 'Open', lastUpdate: '10 mins ago' },
-  { id: 'T-1023', subject: 'Billing discrepancy on invoice #402', user: 'bob@corp.com', priority: 'Medium', status: 'In Progress', lastUpdate: '2 hours ago' },
-  { id: 'T-1022', subject: 'Feature request: Dark mode for docs', user: 'charlie@dev.io', priority: 'Low', status: 'Resolved', lastUpdate: '1 day ago' },
-  { id: 'T-1021', subject: 'Account suspension inquiry', user: 'dave@badactor.net', priority: 'Urgent', status: 'Closed', lastUpdate: '3 days ago' },
+const initialTickets: Ticket[] = [
+  { 
+    id: 'T-1024', 
+    subject: 'Cannot access GPT-4 API', 
+    user: 'alice@example.com', 
+    priority: 'High', 
+    status: 'Open', 
+    lastUpdate: '10 mins ago',
+    conversation: [
+      { sender: 'Alice', role: 'user', message: 'I am getting a 403 error when trying to access the GPT-4 endpoint. My API key should be valid.', time: '10 mins ago' }
+    ]
+  },
+  { 
+    id: 'T-1023', 
+    subject: 'Billing discrepancy on invoice #402', 
+    user: 'bob@corp.com', 
+    priority: 'Medium', 
+    status: 'In Progress', 
+    lastUpdate: '2 hours ago',
+    conversation: [
+      { sender: 'Bob', role: 'user', message: 'My invoice shows $50 but I only used $30 worth of credits.', time: '2 hours ago' },
+      { sender: 'Support Agent', role: 'admin', message: 'Hello Bob, I am looking into your usage logs now. Please hold on.', time: '1 hour ago' }
+    ]
+  },
+  { 
+    id: 'T-1022', 
+    subject: 'Feature request: Dark mode for docs', 
+    user: 'charlie@dev.io', 
+    priority: 'Low', 
+    status: 'Resolved', 
+    lastUpdate: '1 day ago',
+    conversation: [
+        { sender: 'Charlie', role: 'user', message: 'Please add dark mode to the documentation.', time: '1 day ago' },
+        { sender: 'Support Agent', role: 'admin', message: 'Great news! We just pushed an update that includes dark mode.', time: '2 hours ago' }
+    ]
+  },
+  { 
+    id: 'T-1021', 
+    subject: 'Account suspension inquiry', 
+    user: 'dave@badactor.net', 
+    priority: 'Urgent', 
+    status: 'Closed', 
+    lastUpdate: '3 days ago',
+    conversation: []
+  },
 ];
 
 // Reusable Styles
@@ -53,6 +94,53 @@ const menuProps = {
 };
 
 export default function AdminSupport() {
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [open, setOpen] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [replyMessage, setReplyMessage] = useState('');
+  const [newStatus, setNewStatus] = useState<string>('');
+
+  const handleOpen = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+    setNewStatus(ticket.status);
+    setReplyMessage('');
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedTicket(null);
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTicket) return;
+
+    const updatedTickets = tickets.map(ticket => {
+      if (ticket.id === selectedTicket.id) {
+        const updatedConversation = [...(ticket.conversation || [])];
+        if (replyMessage.trim()) {
+            updatedConversation.push({
+                sender: 'Support Agent',
+                role: 'admin',
+                message: replyMessage,
+                time: 'Just now'
+            });
+        }
+        return {
+          ...ticket,
+          status: newStatus as any,
+          lastUpdate: 'Just now',
+          conversation: updatedConversation
+        };
+      }
+      return ticket;
+    });
+
+    setTickets(updatedTickets);
+    handleClose();
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -135,7 +223,10 @@ export default function AdminSupport() {
                      </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+                    <button 
+                      onClick={() => handleOpen(ticket)}
+                      className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+                    >
                       <MessageSquare className="w-3 h-3 mr-1.5" />
                       Reply
                     </button>
@@ -146,6 +237,111 @@ export default function AdminSupport() {
           </table>
         </div>
       </div>
+
+      {/* Reply/Edit Ticket Dialog */}
+      <Dialog 
+        open={open} 
+        onClose={handleClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          className: "bg-background/95 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl",
+          style: { borderRadius: '1.5rem' }
+        }}
+      >
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <div>
+             <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold">Ticket Details</h2>
+                <span className="text-xs font-mono bg-muted px-2 py-1 rounded-md text-muted-foreground">{selectedTicket?.id}</span>
+             </div>
+             <p className="text-sm text-muted-foreground mt-1">{selectedTicket?.subject}</p>
+          </div>
+          <button onClick={handleClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+            <X className="w-5 h-5 text-muted-foreground" />
+          </button>
+        </div>
+        
+        <div className="flex flex-col h-[600px]">
+          {/* Conversation Area */}
+          <div className="flex-1 p-6 overflow-y-auto space-y-6 bg-muted/10">
+            {selectedTicket?.conversation && selectedTicket.conversation.length > 0 ? (
+                selectedTicket.conversation.map((msg, idx) => (
+                    <div key={idx} className={cn("flex gap-3", msg.role === 'admin' ? "flex-row-reverse" : "")}>
+                        {/* Avatar */}
+                        <div className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+                          msg.role === 'admin' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                        )}>
+                           {msg.role === 'admin' ? <Shield className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                        </div>
+                        
+                        {/* Message Bubble */}
+                        <div className={cn(
+                          "max-w-[80%] rounded-2xl p-4 text-sm shadow-sm",
+                          msg.role === 'admin' 
+                            ? "bg-primary/10 text-foreground rounded-tr-sm" 
+                            : "bg-white dark:bg-muted/50 text-foreground rounded-tl-sm border border-border"
+                        )}>
+                            <div className="flex justify-between items-center gap-4 mb-1 text-xs opacity-70">
+                                <span className="font-semibold">{msg.sender}</span>
+                                <span>{msg.time}</span>
+                            </div>
+                            <p className="leading-relaxed">{msg.message}</p>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+                    <MessageSquare className="w-12 h-12 mb-2 opacity-20" />
+                    <p>No conversation history.</p>
+                </div>
+            )}
+          </div>
+
+          {/* Action Area */}
+          <form onSubmit={handleSave} className="p-6 bg-background border-t border-border">
+             <div className="flex gap-4 items-start">
+                <div className="flex-1 space-y-4">
+                    <textarea 
+                        value={replyMessage}
+                        onChange={(e) => setReplyMessage(e.target.value)}
+                        rows={3}
+                        className="flex w-full rounded-xl border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all resize-none"
+                        placeholder="Type your reply here..."
+                    />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                           <Select
+                              value={newStatus}
+                              onChange={(e) => setNewStatus(e.target.value)}
+                              variant="outlined"
+                              size="small"
+                              sx={{ ...selectStyles, height: '40px' }}
+                              MenuProps={menuProps}
+                           >
+                              <MenuItem value="Open">Open</MenuItem>
+                              <MenuItem value="In Progress">In Progress</MenuItem>
+                              <MenuItem value="Resolved">Resolved</MenuItem>
+                              <MenuItem value="Closed">Closed</MenuItem>
+                           </Select>
+                           <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors ml-2">
+                              <input type="checkbox" className="rounded border-input text-primary focus:ring-primary" />
+                              Internal Note
+                           </label>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button onClick={handleClose} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl px-4">Cancel</Button>
+                            <Button type="submit" variant="contained" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 shadow-lg shadow-primary/20">
+                              Send Reply
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+             </div>
+          </form>
+        </div>
+      </Dialog>
     </div>
   );
 }

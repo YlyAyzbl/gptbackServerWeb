@@ -3,6 +3,9 @@
 *.local
 *.log*
 
+# backServer
+#fast_gin
+
 # Dist
 node_modules
 dist/

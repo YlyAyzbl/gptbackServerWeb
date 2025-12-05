@@ -4,7 +4,8 @@ import StorageIcon from '@mui/icons-material/Storage';
 import MemoryIcon from '@mui/icons-material/Memory';
 
 // Application constants
-export const API_BASE_URL = 'https://api.example.com';
+// Mock服务器配置 - 开发环境使用本地fast_gin服务器
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 export const APP_NAME = 'Redux + React Router Demo';
 export const VERSION = '1.0.0';
 

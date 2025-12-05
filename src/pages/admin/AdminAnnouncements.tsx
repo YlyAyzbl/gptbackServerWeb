@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Megaphone, Calendar, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogActions, Button, Select, MenuItem } from '@mui/material';
+import { Plus, Search, Edit2, Trash2, Megaphone, Calendar, X, Eye } from 'lucide-react';
+import { Dialog, DialogContent, DialogActions, Button, Select, MenuItem, Tabs, Tab } from '@mui/material';
 import { cn } from '../../lib/utils';
 
 interface Announcement {
@@ -14,10 +14,42 @@ interface Announcement {
 }
 
 const initialAnnouncements: Announcement[] = [
-  { id: 1, title: 'System Maintenance Scheduled', type: 'Warning', date: '2023-10-25', author: 'System Admin', status: 'Published', content: 'We will be performing routine maintenance...' },
-  { id: 2, title: 'New Models Available: GPT-4 Turbo', type: 'Success', date: '2023-10-20', author: 'Product Team', status: 'Published', content: 'We are excited to announce...' },
-  { id: 3, title: 'API Rate Limit Updates', type: 'Info', date: '2023-10-15', author: 'Dev Ops', status: 'Published', content: 'Please note changes to rate limits...' },
-  { id: 4, title: 'Service Outage Report', type: 'Critical', date: '2023-10-10', author: 'Support Team', status: 'Draft', content: 'Regarding the outage on...' },
+  {
+      id: 1,
+      title: 'System Maintenance Scheduled',
+      type: 'Warning',
+      date: '2023-10-25',
+      author: 'System Admin',
+      status: 'Published',
+      content: 'We will be performing routine maintenance on the database servers this Sunday.\n\n**Expected Downtime:**\n- Start: 02:00 AM UTC\n- End: 04:00 AM UTC\n\nPlease ensure all critical jobs are paused during this window.'
+  },
+  {
+      id: 2,
+      title: 'New Models Available: GPT-4 Turbo',
+      type: 'Success',
+      date: '2023-10-20',
+      author: 'Product Team',
+      status: 'Published',
+      content: 'We are excited to announce the immediate availability of GPT-4 Turbo!\n\nFeatures:\n- 128k Context Window\n- Updated Knowledge Cutoff\n- Lower Pricing\n\nCheck the docs for more info.'
+  },
+  {
+      id: 3,
+      title: 'API Rate Limit Updates',
+      type: 'Info',
+      date: '2023-10-15',
+      author: 'Dev Ops',
+      status: 'Published',
+      content: 'To ensure fair usage, we are updating the rate limits for the free tier.\n\nNew Limit: 60 RPM'
+  },
+  {
+      id: 4,
+      title: 'Service Outage Report',
+      type: 'Critical',
+      date: '2023-10-10',
+      author: 'Support Team',
+      status: 'Draft',
+      content: 'Post-mortem on the outage experienced last Friday.'
+  },
 ];
 
 // Reusable Styles
@@ -58,14 +90,17 @@ export default function AdminAnnouncements() {
   const [open, setOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Announcement | null>(null);
   const [formData, setFormData] = useState<Partial<Announcement>>({});
+  const [previewMode, setPreviewMode] = useState(false);
 
-  const handleOpen = (item?: Announcement) => {
+  const handleOpen = (item?: Announcement, viewOnly: boolean = false) => {
     if (item) {
       setEditingItem(item);
       setFormData(item);
+      setPreviewMode(viewOnly);
     } else {
       setEditingItem(null);
       setFormData({ type: 'Info', status: 'Draft' });
+      setPreviewMode(false);
     }
     setOpen(true);
   };
@@ -74,6 +109,7 @@ export default function AdminAnnouncements() {
     setOpen(false);
     setEditingItem(null);
     setFormData({});
+    setPreviewMode(false);
   };
 
   const handleSave = (e: React.FormEvent) => {
@@ -189,7 +225,14 @@ export default function AdminAnnouncements() {
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
-                        onClick={() => handleOpen(item)}
+                        onClick={() => handleOpen(item, true)}
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        title="View Details"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleOpen(item, false)}
                         className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -213,80 +256,123 @@ export default function AdminAnnouncements() {
       <Dialog 
         open={open} 
         onClose={handleClose}
+        maxWidth="md"
+        fullWidth
         PaperProps={{
-          className: "bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl w-full max-w-lg shadow-2xl",
+          className: "bg-background/95 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl",
           style: { borderRadius: '1.5rem' }
         }}
       >
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-xl font-bold">{editingItem ? 'Edit Announcement' : 'New Announcement'}</h2>
+          <h2 className="text-xl font-bold">
+            {previewMode ? 'Announcement Details' : (editingItem ? 'Edit Announcement' : 'New Announcement')}
+          </h2>
           <button onClick={handleClose} className="p-2 hover:bg-muted rounded-full transition-colors">
             <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
         <form onSubmit={handleSave}>
-          <DialogContent className="space-y-4 p-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Title</label>
-              <input 
-                name="title" 
-                value={formData.title || ''}
-                onChange={e => setFormData({...formData, title: e.target.value})}
-                required 
-                className="input-base"
-                placeholder="Announcement Title"
-              />
+          <DialogContent className="space-y-6 p-6">
+            
+            {/* Toggle between Edit and Preview if in edit mode */}
+            {!previewMode && (
+                <div className="flex justify-end">
+                   <Button 
+                     size="small" 
+                     onClick={() => setPreviewMode(!previewMode)}
+                     className="text-primary bg-primary/10 hover:bg-primary/20 rounded-lg px-3"
+                   >
+                     {previewMode ? 'Switch to Edit' : 'Preview Content'}
+                   </Button>
+                </div>
+            )}
+
+            <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-muted-foreground">Title</label>
+                        <input 
+                            value={formData.title || ''}
+                            onChange={e => setFormData({...formData, title: e.target.value})}
+                            readOnly={previewMode}
+                            className={cn("input-base", previewMode && "border-transparent bg-transparent pl-0 font-bold text-lg")}
+                            placeholder="Announcement Title"
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">Type</label>
+                            {previewMode ? (
+                                <div className="py-2 font-medium">{formData.type}</div>
+                            ) : (
+                                <Select
+                                    value={formData.type || 'Info'}
+                                    onChange={e => setFormData({...formData, type: e.target.value as any})}
+                                    fullWidth
+                                    variant="outlined"
+                                    sx={selectStyles}
+                                    MenuProps={menuProps}
+                                >
+                                    <MenuItem value="Info">Info</MenuItem>
+                                    <MenuItem value="Success">Success</MenuItem>
+                                    <MenuItem value="Warning">Warning</MenuItem>
+                                    <MenuItem value="Critical">Critical</MenuItem>
+                                </Select>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">Status</label>
+                            {previewMode ? (
+                                <div className="py-2 font-medium">{formData.status}</div>
+                            ) : (
+                                <Select
+                                    value={formData.status || 'Draft'}
+                                    onChange={e => setFormData({...formData, status: e.target.value as any})}
+                                    fullWidth
+                                    variant="outlined"
+                                    sx={selectStyles}
+                                    MenuProps={menuProps}
+                                >
+                                    <MenuItem value="Draft">Draft</MenuItem>
+                                    <MenuItem value="Published">Published</MenuItem>
+                                </Select>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Content</label>
+                    {previewMode ? (
+                         <div className="w-full rounded-xl border border-border bg-muted/10 p-6 min-h-[200px] whitespace-pre-wrap text-sm leading-relaxed">
+                            {formData.content || <span className="text-muted-foreground italic">No content provided.</span>}
+                         </div>
+                    ) : (
+                        <textarea 
+                            value={formData.content || ''}
+                            onChange={e => setFormData({...formData, content: e.target.value})}
+                            rows={12}
+                            className="flex w-full rounded-xl border border-input bg-background/50 px-4 py-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all resize-none font-mono"
+                            placeholder="Write your announcement here... (Markdown supported)"
+                        />
+                    )}
+                </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Type</label>
-                <Select
-                  value={formData.type || 'Info'}
-                  onChange={e => setFormData({...formData, type: e.target.value as any})}
-                  fullWidth
-                  variant="outlined"
-                  sx={selectStyles}
-                  MenuProps={menuProps}
-                >
-                  <MenuItem value="Info">Info</MenuItem>
-                  <MenuItem value="Success">Success</MenuItem>
-                  <MenuItem value="Warning">Warning</MenuItem>
-                  <MenuItem value="Critical">Critical</MenuItem>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Status</label>
-                <Select
-                  value={formData.status || 'Draft'}
-                  onChange={e => setFormData({...formData, status: e.target.value as any})}
-                  fullWidth
-                  variant="outlined"
-                  sx={selectStyles}
-                  MenuProps={menuProps}
-                >
-                  <MenuItem value="Draft">Draft</MenuItem>
-                  <MenuItem value="Published">Published</MenuItem>
-                </Select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Content</label>
-              <textarea 
-                name="content" 
-                value={formData.content || ''}
-                onChange={e => setFormData({...formData, content: e.target.value})}
-                rows={4}
-                className="flex w-full rounded-xl border border-input bg-background/50 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all resize-none"
-                placeholder="Write your announcement here..."
-              />
-            </div>
+
           </DialogContent>
-          <DialogActions className="p-6 border-t border-border">
-            <Button onClick={handleClose} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl px-4">Cancel</Button>
-            <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 py-2">
-              {editingItem ? 'Save Changes' : 'Post Announcement'}
-            </Button>
-          </DialogActions>
+          {!previewMode && (
+              <DialogActions className="p-6 border-t border-border">
+                <Button onClick={handleClose} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl px-4">Cancel</Button>
+                <Button type="submit" variant="contained" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6">
+                  {editingItem ? 'Save Changes' : 'Post Announcement'}
+                </Button>
+              </DialogActions>
+          )}
+          {previewMode && (
+             <DialogActions className="p-6 border-t border-border">
+                <Button onClick={handleClose} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6">Close</Button>
+             </DialogActions>
+          )}
         </form>
       </Dialog>
     </div>

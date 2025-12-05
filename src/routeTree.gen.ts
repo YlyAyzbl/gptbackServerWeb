@@ -15,6 +15,8 @@ import { Route as UsersImport } from './routes/users'
 import { Route as SupportImport } from './routes/support'
 import { Route as SettingsImport } from './routes/settings'
 import { Route as ServicesImport } from './routes/services'
+import { Route as RegisterImport } from './routes/register'
+import { Route as LoginImport } from './routes/login'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as AnnouncementsImport } from './routes/announcements'
 import { Route as AiTokensImport } from './routes/ai-tokens'
@@ -49,6 +51,18 @@ const SettingsRoute = SettingsImport.update({
 const ServicesRoute = ServicesImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const RegisterRoute = RegisterImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LoginRoute = LoginImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -144,6 +158,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -224,6 +252,8 @@ export interface FileRoutesByFullPath {
   '/ai-tokens': typeof AiTokensRoute
   '/announcements': typeof AnnouncementsRoute
   '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/services': typeof ServicesRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
@@ -241,6 +271,8 @@ export interface FileRoutesByTo {
   '/ai-tokens': typeof AiTokensRoute
   '/announcements': typeof AnnouncementsRoute
   '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/services': typeof ServicesRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
@@ -259,6 +291,8 @@ export interface FileRoutesById {
   '/ai-tokens': typeof AiTokensRoute
   '/announcements': typeof AnnouncementsRoute
   '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/services': typeof ServicesRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
@@ -278,6 +312,8 @@ export interface FileRouteTypes {
     | '/ai-tokens'
     | '/announcements'
     | '/dashboard'
+    | '/login'
+    | '/register'
     | '/services'
     | '/settings'
     | '/support'
@@ -294,6 +330,8 @@ export interface FileRouteTypes {
     | '/ai-tokens'
     | '/announcements'
     | '/dashboard'
+    | '/login'
+    | '/register'
     | '/services'
     | '/settings'
     | '/support'
@@ -310,6 +348,8 @@ export interface FileRouteTypes {
     | '/ai-tokens'
     | '/announcements'
     | '/dashboard'
+    | '/login'
+    | '/register'
     | '/services'
     | '/settings'
     | '/support'
@@ -328,6 +368,8 @@ export interface RootRouteChildren {
   AiTokensRoute: typeof AiTokensRoute
   AnnouncementsRoute: typeof AnnouncementsRoute
   DashboardRoute: typeof DashboardRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
   ServicesRoute: typeof ServicesRoute
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
@@ -345,6 +387,8 @@ const rootRouteChildren: RootRouteChildren = {
   AiTokensRoute: AiTokensRoute,
   AnnouncementsRoute: AnnouncementsRoute,
   DashboardRoute: DashboardRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
   ServicesRoute: ServicesRoute,
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
@@ -371,6 +415,8 @@ export const routeTree = rootRoute
         "/ai-tokens",
         "/announcements",
         "/dashboard",
+        "/login",
+        "/register",
         "/services",
         "/settings",
         "/support",
@@ -394,6 +440,12 @@ export const routeTree = rootRoute
     },
     "/dashboard": {
       "filePath": "dashboard.tsx"
+    },
+    "/login": {
+      "filePath": "login.tsx"
+    },
+    "/register": {
+      "filePath": "register.tsx"
     },
     "/services": {
       "filePath": "services.tsx"
