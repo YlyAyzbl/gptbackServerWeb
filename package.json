@@ -29,6 +29,7 @@
     "@tanstack/react-router": "^1.78.3",
     "@tanstack/router-core": "^1.78.3",
     "@tanstack/router-devtools": "^1.78.3",
+    "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.555.0",
     "normalize.css": "^8.0.1",

@@ -1,19 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from '@tanstack/react-router';
-import { Eye, EyeOff, ArrowRight, Lock, Mail } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Lock, Mail, AlertCircle } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login, loading, error } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Mock login delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    navigate({ to: '/dashboard' });
+    setLocalError('');
+
+    if (!username || !password) {
+      setLocalError('请输入用户名和密码');
+      return;
+    }
+
+    try {
+      const result = await login({ username, password });
+
+      // 检查登录是否成功
+      if (result.type === 'auth/login/fulfilled') {
+        navigate({ to: '/dashboard', replace: true });
+      } else if (result.type === 'auth/login/rejected') {
+        setLocalError(result.payload || '登录失败，请检查用户名和密码');
+      }
+    } catch (err: any) {
+      setLocalError(err.message || '登录失败，请稍后重试');
+    }
   };
 
   return (
@@ -39,57 +57,72 @@ export default function Login() {
             <p className="text-muted-foreground mt-2 text-sm">Enter your credentials to access your account</p>
           </div>
 
+          {/* Error Message */}
+          {(localError || error) && (
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span>{localError || error}</span>
+            </div>
+          )}
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground/80 ml-1">Email</label>
+              <label className="text-sm font-medium text-foreground/80 ml-1">用户名</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
                   <Mail className="w-5 h-5" />
                 </div>
-                <input 
-                  type="email" 
+                <input
+                  type="text"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-11 pr-4 py-3 rounded-xl bg-background/50 border border-input text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all hover:bg-background/80"
-                  placeholder="name@company.com" 
+                  placeholder="请输入用户名"
+                  disabled={loading}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between ml-1">
-                <label className="text-sm font-medium text-foreground/80">Password</label>
-                <a href="#" className="text-xs font-semibold text-primary hover:text-primary/80 hover:underline">Forgot password?</a>
+                <label className="text-sm font-medium text-foreground/80">密码</label>
+                <a href="#" className="text-xs font-semibold text-primary hover:text-primary/80 hover:underline">忘记密码?</a>
               </div>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input 
+                <input
                   type={showPassword ? "text" : "password"}
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-11 pr-12 py-3 rounded-xl bg-background/50 border border-input text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all hover:bg-background/80"
-                  placeholder="••••••••" 
+                  placeholder="••••••••"
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-4 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={loading}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={isLoading}
+            <button
+              type="submit"
+              disabled={loading}
               className="w-full group relative flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-primary to-purple-600 text-white text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
             >
-              <div className={`absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ${isLoading ? 'translate-y-0 animate-pulse' : ''}`} />
+              <div className={`absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ${loading ? 'translate-y-0 animate-pulse' : ''}`} />
               <span className="relative z-10 flex items-center gap-2">
-                {isLoading ? 'Signing in...' : 'Sign In'} 
-                {!isLoading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
+                {loading ? '登录中...' : '登录'}
+                {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
               </span>
             </button>
           </form>
