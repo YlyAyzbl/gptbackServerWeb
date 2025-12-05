@@ -35,6 +35,50 @@
       "text": "个人设置",
       "icon": "settings",
       "path": "/settings"
+    },
+    {
+      "id": "admin",
+      "text": "管理后台",
+      "icon": "shield",
+      "path": "/admin"
+    }
+  ],
+  "adminMenu": [
+    {
+      "id": "admin-dashboard",
+      "text": "概览",
+      "icon": "layout-dashboard",
+      "path": "/admin"
+    },
+    {
+      "id": "admin-users",
+      "text": "用户管理",
+      "icon": "users",
+      "path": "/admin/users"
+    },
+    {
+      "id": "admin-services",
+      "text": "服务管理",
+      "icon": "wrench",
+      "path": "/admin/services"
+    },
+    {
+      "id": "admin-announcements",
+      "text": "公告管理",
+      "icon": "megaphone",
+      "path": "/admin/announcements"
+    },
+    {
+      "id": "admin-support",
+      "text": "工单管理",
+      "icon": "headphones",
+      "path": "/admin/support"
+    },
+    {
+      "id": "admin-settings",
+      "text": "系统设置",
+      "icon": "settings",
+      "path": "/admin/settings"
     }
   ],
   "settingsTabs": [

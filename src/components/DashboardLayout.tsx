@@ -9,7 +9,9 @@ import {
   Settings,
   Menu,
   Moon,
-  Sun
+  Sun,
+  Shield,
+  Users
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useMenu } from '../hooks/useMenu';
@@ -24,6 +26,8 @@ const menuIconMap: Record<string, React.ReactNode> = {
   'headphones': <HeadphonesIcon className="w-5 h-5" />,
   'megaphone': <Megaphone className="w-5 h-5" />,
   'settings': <Settings className="w-5 h-5" />,
+  'shield': <Shield className="w-5 h-5" />,
+  'users': <Users className="w-5 h-5" />,
 };
 
 const drawerWidth = 260;
@@ -36,7 +40,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { themeMode, toggleColorMode } = useTheme();
-  const { mainMenu } = useMenu();
+  const { mainMenu, adminMenu } = useMenu();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -47,8 +51,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return <Sun className="w-5 h-5" />;
   };
 
+  const isAdmin = location.pathname.startsWith('/admin');
+  const currentMenu = isAdmin ? adminMenu : mainMenu;
+
   // Transform menu items with icons
-  const menuItems = mainMenu.map(item => ({
+  const menuItems = currentMenu.map(item => ({
     text: item.text,
     icon: menuIconMap[item.icon],
     path: item.path,
@@ -67,20 +74,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">88code</h1>
         </div>
-        <p className="text-xs text-muted-foreground font-medium pl-1">AI 编码中转站</p>
+        <p className="text-xs text-muted-foreground font-medium pl-1">
+          {isAdmin ? '管理后台' : 'AI 编码中转站'}
+        </p>
       </div>
 
       {/* Menu Label */}
       <div className="px-6 py-2 mb-2">
-        <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-70">Main Menu</h3>
+        <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-70">
+          {isAdmin ? 'Admin Menu' : 'Main Menu'}
+        </h3>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2">
         {menuItems.map((item) => {
           // Accurate Active Logic
-          const isActive = item.path === '/dashboard'
-            ? location.pathname === '/dashboard'
+          const isActive = item.path === '/dashboard' || item.path === '/admin'
+            ? location.pathname === item.path
             : item.path === '/'
               ? location.pathname === '/'
               : location.pathname.startsWith(item.path);
@@ -144,6 +155,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           );
         })}
       </nav>
+
+      {/* Admin Back Link */}
+      {isAdmin && (
+        <div className="px-4 py-2">
+          <Link
+            to="/"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-200 border border-transparent hover:border-border/50"
+          >
+            <span className="group-hover:text-primary transition-colors duration-300">
+              <Home className="w-5 h-5" />
+            </span>
+            返回主菜单
+          </Link>
+        </div>
+      )}
 
       {/* Footer User Info */}
       <div className="p-4 border-t border-border bg-black/5 dark:bg-white/5">

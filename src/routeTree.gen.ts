@@ -19,6 +19,12 @@ import { Route as DashboardImport } from './routes/dashboard'
 import { Route as AnnouncementsImport } from './routes/announcements'
 import { Route as AiTokensImport } from './routes/ai-tokens'
 import { Route as IndexImport } from './routes/index'
+import { Route as AdminIndexImport } from './routes/admin/index'
+import { Route as AdminUsersImport } from './routes/admin/users'
+import { Route as AdminSupportImport } from './routes/admin/support'
+import { Route as AdminSettingsImport } from './routes/admin/settings'
+import { Route as AdminServicesImport } from './routes/admin/services'
+import { Route as AdminAnnouncementsImport } from './routes/admin/announcements'
 
 // Create/Update Routes
 
@@ -67,6 +73,42 @@ const AiTokensRoute = AiTokensImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminIndexRoute = AdminIndexImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminUsersRoute = AdminUsersImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminSupportRoute = AdminSupportImport.update({
+  id: '/admin/support',
+  path: '/admin/support',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminSettingsRoute = AdminSettingsImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminServicesRoute = AdminServicesImport.update({
+  id: '/admin/services',
+  path: '/admin/services',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminAnnouncementsRoute = AdminAnnouncementsImport.update({
+  id: '/admin/announcements',
+  path: '/admin/announcements',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -130,6 +172,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersImport
       parentRoute: typeof rootRoute
     }
+    '/admin/announcements': {
+      id: '/admin/announcements'
+      path: '/admin/announcements'
+      fullPath: '/admin/announcements'
+      preLoaderRoute: typeof AdminAnnouncementsImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/services': {
+      id: '/admin/services'
+      path: '/admin/services'
+      fullPath: '/admin/services'
+      preLoaderRoute: typeof AdminServicesImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/support': {
+      id: '/admin/support'
+      path: '/admin/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -144,6 +228,12 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/users': typeof UsersRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin': typeof AdminIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -155,6 +245,12 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/users': typeof UsersRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin': typeof AdminIndexRoute
 }
 
 export interface FileRoutesById {
@@ -167,6 +263,12 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/users': typeof UsersRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/': typeof AdminIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -180,6 +282,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/users'
+    | '/admin/announcements'
+    | '/admin/services'
+    | '/admin/settings'
+    | '/admin/support'
+    | '/admin/users'
+    | '/admin'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -190,6 +298,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/users'
+    | '/admin/announcements'
+    | '/admin/services'
+    | '/admin/settings'
+    | '/admin/support'
+    | '/admin/users'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -200,6 +314,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/users'
+    | '/admin/announcements'
+    | '/admin/services'
+    | '/admin/settings'
+    | '/admin/support'
+    | '/admin/users'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 
@@ -212,6 +332,12 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
   UsersRoute: typeof UsersRoute
+  AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
+  AdminServicesRoute: typeof AdminServicesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminSupportRoute: typeof AdminSupportRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -223,6 +349,12 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
   UsersRoute: UsersRoute,
+  AdminAnnouncementsRoute: AdminAnnouncementsRoute,
+  AdminServicesRoute: AdminServicesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminSupportRoute: AdminSupportRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -242,7 +374,13 @@ export const routeTree = rootRoute
         "/services",
         "/settings",
         "/support",
-        "/users"
+        "/users",
+        "/admin/announcements",
+        "/admin/services",
+        "/admin/settings",
+        "/admin/support",
+        "/admin/users",
+        "/admin/"
       ]
     },
     "/": {
@@ -268,6 +406,24 @@ export const routeTree = rootRoute
     },
     "/users": {
       "filePath": "users.tsx"
+    },
+    "/admin/announcements": {
+      "filePath": "admin/announcements.tsx"
+    },
+    "/admin/services": {
+      "filePath": "admin/services.tsx"
+    },
+    "/admin/settings": {
+      "filePath": "admin/settings.tsx"
+    },
+    "/admin/support": {
+      "filePath": "admin/support.tsx"
+    },
+    "/admin/users": {
+      "filePath": "admin/users.tsx"
+    },
+    "/admin/": {
+      "filePath": "admin/index.tsx"
     }
   }
 }

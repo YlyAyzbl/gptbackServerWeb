@@ -13,5 +13,6 @@ export interface SettingsTab {
 
 export interface MenuConfig {
   mainMenu: MenuItem[];
+  adminMenu: MenuItem[];
   settingsTabs: SettingsTab[];
 }

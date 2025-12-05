@@ -6,16 +6,17 @@ export const useMenu = () => {
   const config = menuConfig as MenuConfig;
 
   const mainMenu = useMemo(() => config.mainMenu, []);
+  const adminMenu = useMemo(() => config.adminMenu, []);
   const settingsTabs = useMemo(() => config.settingsTabs, []);
 
   // 根据 ID 获取菜单项
   const getMenuItemById = (id: string): MenuItem | undefined => {
-    return mainMenu.find(item => item.id === id);
+    return mainMenu.find(item => item.id === id) || adminMenu.find(item => item.id === id);
   };
 
   // 根据路径获取菜单项
   const getMenuItemByPath = (path: string): MenuItem | undefined => {
-    return mainMenu.find(item => item.path === path);
+    return mainMenu.find(item => item.path === path) || adminMenu.find(item => item.path === path);
   };
 
   // 根据 ID 获取设置标签
@@ -25,6 +26,7 @@ export const useMenu = () => {
 
   return {
     mainMenu,
+    adminMenu,
     settingsTabs,
     getMenuItemById,
     getMenuItemByPath,
