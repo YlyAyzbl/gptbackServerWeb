@@ -1,219 +1,327 @@
-# Redux + React Router 演示应用
+# React MUI Vite 管理后台
 
-一个完整的 React 应用示例，展示了 Redux 状态管理和 localStorage 持久化的最佳实践。
+完整的前后端集成项目，包含Axios、认证系统和Mock服务器。
 
-## 技术栈
+## 🚀 快速开始
 
-- **React**: 18.3.1
-- **React DOM**: 18.3.1
-- **TypeScript**: 5.6.3
-- **Redux**: @reduxjs/toolkit 1.9.7 + react-redux 8.1.3
-- **Redux-Persist**: 6.0.0（用于状态持久化）
-- **React Router**: @tanstack/react-router 1.78.3 + @tanstack/router-devtools 1.78.3
-- **UI 框架**: Material-UI (MUI) 6.1.6
-- **样式**: Tailwind CSS 3.4.1
-- **构建工具**: Vite 5.4.8
+```bash
+# Terminal 1: 启动Mock服务器
+cd fast_gin && ./run.sh dev
 
-## 项目结构
+# Terminal 2: 启动前端
+npm run dev
+
+# 浏览器访问 http://localhost:5173/login
+# 使用账号: test_user / 123456
+```
+
+## 🔐 默认测试账号
+
+| 账号 | 密码 | 说明 |
+|------|------|------|
+| `test_user` | `123456` | 推荐使用 |
+| `admin` | `admin123` | 管理员 |
+| `demo` | `demo123` | 演示 |
+
+> 账号在Mock服务器首次启动时自动创建
+
+## 📊 功能总结
+
+### ✅ 已实现
+
+**1. Axios HTTP客户端**
+- 请求/响应拦截器
+- 自动添加Authorization header
+- 401错误自动重定向
+- 文件: `src/api/axiosInstance.ts`
+
+**2. API服务层**
+- 11个后端端点封装
+- TypeScript类型定义
+- 单例模式设计
+- 文件: `src/api/apiService.ts`
+
+**3. Redux认证管理**
+- login/logout/restoreSession
+- localStorage持久化
+- Redux Persist集成
+- 文件: `src/store/slices/authSlice.ts`
+
+**4. 自定义Hook**
+- `useAuth` - 认证状态和方法
+- `useApiCall` - API调用Hook
+- 文件: `src/hooks/`
+
+**5. 路由保护**
+- ProtectedRoute组件
+- 12个路由已保护
+- 自动会话恢复
+- 文件: `src/components/ProtectedRoute.tsx`
+
+**6. 登录功能**
+- 登录页面UI
+- 表单验证和错误提示
+- 登录后自动跳转
+- 文件: `src/pages/Login.tsx`
+
+**7. Mock服务器**
+- Go + Gin + SQLite
+- JWT认证
+- 11个API端点
+- 自动创建测试账号
+- 目录: `fast_gin/`
+
+### ❌ 未实现（可扩展）
+
+- 注册功能（前端）
+- 忘记密码
+- Token刷新机制
+- 权限控制（RBAC）
+- 个人资料编辑
+
+## 🏗️ 技术栈
+
+### 前端
+- React 19 + TypeScript 5
+- Material-UI 6 + TailwindCSS
+- Redux Toolkit + Redux Persist
+- TanStack Router
+- Axios
+- Vite 5
+
+### 后端 (Mock)
+- Go + Gin
+- SQLite + GORM
+- JWT认证
+
+## 📁 核心文件
 
 ```
 src/
-├── store/                    # Redux 状态管理
-│   ├── index.ts             # Store 配置和 persistor 设置
-│   ├── hooks.ts             # 自定义 Redux hooks（类型安全）
-│   └── slices/              # Redux slices
-│       ├── todoSlice.ts      # 待办事项状态管理
-│       └── userSlice.ts      # 用户状态管理
-├── routes/                  # React Router 路由定义
-│   ├── __root.tsx           # 根路由布局
-│   ├── index.tsx            # 主页路由
-│   ├── state-demo.tsx       # 状态管理演示页面
-│   └── persistence-demo.tsx # 持久化存储演示页面
-├── pages/                   # 页面组件
-│   ├── HomePage.tsx         # 主页
-│   ├── StateDemoPage.tsx    # 状态演示页面
-│   └── PersistenceDemoPage.tsx # 持久化演示页面
-├── compoents/              # 可复用组件
-│   ├── navbar.tsx          # 导航栏
-│   ├── footer.tsx          # 页脚
-│   ├── TodoList.tsx        # 待办事项列表
-│   └── UserInfo.tsx        # 用户信息展示
-├── global/
-│   └── config.ts           # 应用配置和常量
-├── main.tsx                # 应用入口
-└── index.css               # Tailwind CSS 全局样式
+├── api/
+│   ├── axiosInstance.ts       # Axios配置
+│   └── apiService.ts          # API服务层
+├── store/
+│   └── slices/authSlice.ts    # 认证状态
+├── hooks/
+│   ├── useAuth.ts             # 认证Hook
+│   └── useApiCall.ts          # API Hook
+├── components/
+│   └── ProtectedRoute.tsx     # 路由保护
+└── pages/
+    └── Login.tsx              # 登录页面
+
+fast_gin/
+├── gins/
+│   ├── router.go              # 路由
+│   ├── apiController.go       # API
+│   └── userController.go      # 认证
+└── sqlite/
+    ├── db.go                  # 数据库
+    ├── user.go                # 用户模型
+    └── seed.go                # 测试账号
 ```
 
-## 核心功能
+## 🔐 认证流程
 
-### 1. Redux 状态管理
-
-#### Todo State（待办事项）
-- 添加待办事项 (`addTodo`)
-- 删除待办事项 (`removeTodo`)
-- 更新待办事项 (`updateTodo`)
-- 切换完成状态 (`toggleTodo`)
-- 设置过滤器 (`setFilter`: all/active/completed)
-- 清除已完成项 (`clearCompleted`)
-
-#### User State（用户状态）
-- 用户登录 (`login`)
-- 用户登出 (`logout`)
-- 更新用户信息 (`updateUser`)
-- 更新用户偏好设置 (`updatePreferences`)
-
-### 2. 持久化存储
-
-使用 redux-persist 自动将 Redux 状态持久化到浏览器 localStorage：
-- 存储键名：`persist:root`
-- 白名单：`['todo', 'user']`（只持久化这些 reducer 的状态）
-- 自动恢复：应用启动时自动从 localStorage 恢复状态
-
-### 3. React Router
-
-- TanStack Router（现代化的类型安全路由）
-- 支持嵌套路由
-- 路由开发工具（Router DevTools）
-
-## 快速开始
-
-### 安装依赖
-
-```bash
-yarn install
+### 登录
+```
+输入账号密码 → apiService.login()
+  ↓
+POST /api/login → Mock服务器
+  ↓
+返回JWT Token
+  ↓
+Redux保存 + localStorage
+  ↓
+跳转到 /dashboard
 ```
 
-### 开发模式
-
-```bash
-yarn dev
+### API请求
+```
+调用 apiService.getUsers()
+  ↓
+拦截器添加 Authorization: Bearer {token}
+  ↓
+发送请求
+  ↓
+处理响应 / 401重定向登录
 ```
 
-浏览器会自动打开 `http://localhost:3000`
-
-### 生产构建
-
-```bash
-yarn build
+### 路由保护
+```
+访问受保护路由
+  ↓
+ProtectedRoute检查认证
+  ↓
+未认证 → 尝试恢复会话
+  ↓
+失败 → 重定向登录
+成功 → 显示内容
 ```
 
-### 预览生产构建
+## 📡 API端点
 
-```bash
-yarn serve
-```
+**认证**
+- `POST /api/login` - 登录
 
-### 类型检查
+**用户管理**
+- `GET /api/users` - 用户列表
+- `GET /api/users/:id` - 单个用户
+- `POST /api/users` - 创建用户
+- `PUT /api/users/:id` - 更新用户
+- `DELETE /api/users/:id` - 删除用户
 
-```bash
-yarn typecheck
-```
+**数据**
+- `GET /api/dashboard` - 仪表板
+- `GET /api/services` - 服务列表
+- `GET /api/tickets` - 工单列表
+- `GET /api/token-usage` - Token统计
+- `GET /api/test` - 健康检查
 
-## 页面导览
+## 💻 使用示例
 
-### 首页 (`/`)
-展示应用概览，包含：
-- 用户登录/登出组件
-- 待办事项管理界面
-- 功能导航链接
+### 认证
 
-### 状态管理演示 (`/state-demo`)
-展示 Redux 状态的实时变化：
-- 用户状态管理演示
-- 待办事项 CRUD 操作
-- 状态 JSON 查看器（用于调试）
+```typescript
+import { useAuth } from '../hooks/useAuth';
 
-### 持久化演示 (`/persistence-demo`)
-演示 localStorage 的持久化存储：
-- 添加测试数据
-- 查看 localStorage 中的数据
-- 清除存储的选项
-- 刷新页面验证数据持久化
-
-## 使用示例
-
-### 使用 Redux Hooks
-
-```tsx
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { addTodo, removeTodo } from '../store/slices/todoSlice';
-
-function MyComponent() {
-  const dispatch = useAppDispatch();
-  const todos = useAppSelector(state => state.todo.items);
-
-  const handleAddTodo = (title: string) => {
-    dispatch(addTodo({ title, description: '', completed: false }));
-  };
+export default function MyComponent() {
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
-    // JSX 代码
+    <>
+      {isAuthenticated && <p>欢迎, {user?.username}</p>}
+      <button onClick={logout}>登出</button>
+    </>
   );
 }
 ```
 
-### 查看 localStorage 数据
+### API调用
 
-在浏览器开发者工具中：
-1. 打开 DevTools (F12)
-2. 进入 Application 标签
-3. 找到 LocalStorage 部分
-4. 查看 `persist:root` 键下的数据
+```typescript
+import { useApiCall } from '../hooks/useApiCall';
+import apiService from '../api/apiService';
 
-## 持久化原理
+export default function UserList() {
+  const { data, loading, error } = useApiCall(
+    () => apiService.getUsers(),
+    true
+  );
 
+  if (loading) return <div>加载中...</div>;
+  if (error) return <div>错误: {error}</div>;
+
+  return (
+    <div>
+      {data?.users?.map(user => (
+        <div key={user.id}>{user.name}</div>
+      ))}
+    </div>
+  );
+}
 ```
-Redux Store 变化 → redux-persist 监听 → 序列化状态 → 存储到 localStorage
-                                          ↓
-                                    应用启动时
-                                       ↓
-                          从 localStorage 读取 → 反序列化 → 恢复到 Redux Store
+
+### 路由保护
+
+```typescript
+import { ProtectedRoute } from '../components/ProtectedRoute';
+
+<ProtectedRoute>
+  <Dashboard />
+</ProtectedRoute>
 ```
 
-## 配置文件说明
+## 🧪 测试
 
-- **tailwind.config.js**: Tailwind CSS 配置
-- **postcss.config.js**: PostCSS 配置（处理 Tailwind）
-- **vite.config.ts**: Vite 构建配置
-- **tsconfig.json**: TypeScript 配置
-- **.claude.md**: Claude 项目提示文件
+### 基础测试
+```bash
+npm run build        # 编译
+npx tsc --noEmit     # 类型检查
+```
 
-## 开发建议
+### 功能测试
 
-1. **类型安全**: 使用 `useAppDispatch` 和 `useAppSelector` 而不是原生 Redux hooks
-2. **Redux DevTools**: 可以安装浏览器插件以更好地调试 Redux 状态变化
-3. **性能优化**: 使用 `reselect` 库优化选择器性能（如需）
-4. **中间件**: redux-persist 已配置，支持 localStorage 序列化
+1. **登录** - 访问 /login，输入 test_user/123456
+2. **Token** - DevTools → localStorage 确认 token
+3. **API** - DevTools → Network 确认 Authorization header
+4. **持久化** - 刷新页面验证仍保持登录
+5. **保护** - 清除localStorage，访问 /dashboard 验证重定向
 
-## 扩展应用
+## 🛠️ 常用命令
 
-### 添加新的 Reducer
+```bash
+# 开发
+npm run dev
+npm run build
+npm run preview
 
-1. 在 `src/store/slices/` 中创建新的 slice 文件
-2. 在 `src/store/index.ts` 中添加到 `combineReducers`
-3. 在 `persist:root` 的 whitelist 中添加（如需持久化）
+# Mock服务器
+cd fast_gin
+./run.sh dev         # 开发模式
+./run.sh prod        # 生产模式
+./run.sh quiet       # 安静模式
 
-### 添加新的页面
+# 数据库
+cd fast_gin
+sqlite3 test.db "SELECT * FROM users;"  # 查看用户
+rm -f test.db && ./run.sh dev           # 重置
+```
 
-1. 在 `src/pages/` 中创建页面组件
-2. 在 `src/routes/` 中创建路由文件
-3. 路由会自动被 TanStack Router 生成
+## 📊 受保护路由（12个）
 
-## 浏览器兼容性
+**用户路由**
+- /dashboard, /users, /services
+- /support, /announcements, /settings
+- /ai-tokens
 
-- Chrome/Edge: 最新版本
-- Firefox: 最新版本
-- Safari: 最新版本
-- localStorage 支持所有现代浏览器
+**管理路由**
+- /admin/, /admin/users, /admin/services
+- /admin/support, /admin/announcements
+- /admin/settings
 
-## 许可证
+## 🔧 故障排除
+
+**无法登录**
+- 确认Mock服务器：`curl http://localhost:8080/api/test`
+- 检查测试账号（查看启动日志）
+- 重置数据库：`rm -f test.db && ./run.sh dev`
+
+**CORS错误**
+- 确认Mock服务器运行
+- 检查axios baseURL配置
+- 验证前端在 localhost:5173
+
+**Token失效**
+- 检查localStorage
+- 确认Authorization header
+- 验证axios拦截器
+
+## 🎯 下一步
+
+### 功能扩展
+- [ ] 注册页面
+- [ ] 忘记密码
+- [ ] Token刷新
+- [ ] 权限控制
+- [ ] 个人资料编辑
+
+### 优化
+- [ ] API缓存
+- [ ] 虚拟滚动
+- [ ] 代码分割
+- [ ] 图片懒加载
+
+### 测试
+- [ ] 单元测试
+- [ ] 集成测试
+- [ ] E2E测试
+
+## 📝 License
 
 MIT
 
-## 学习资源
+---
 
-- [Redux Toolkit 官方文档](https://redux-toolkit.js.org/)
-- [React Redux 文档](https://react-redux.js.org/)
-- [redux-persist GitHub](https://github.com/rt2zz/redux-persist)
-- [TanStack Router 文档](https://tanstack.com/router/latest)
-- [Tailwind CSS 文档](https://tailwindcss.com/)
+**最后更新：** 2025年12月
