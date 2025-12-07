@@ -27,7 +27,8 @@ export default function Login() {
       if (result.type === 'auth/login/fulfilled') {
         navigate({ to: '/dashboard', replace: true });
       } else if (result.type === 'auth/login/rejected') {
-        setLocalError(result.payload || '登录失败，请检查用户名和密码');
+        const payload = result.payload;
+        setLocalError(typeof payload === 'string' ? payload : '登录失败，请检查用户名和密码');
       }
     } catch (err: any) {
       setLocalError(err.message || '登录失败，请稍后重试');
@@ -45,7 +46,7 @@ export default function Login() {
       {/* Login Card */}
       <div className="w-full max-w-md mx-4 relative z-10">
         <div className="glass rounded-3xl p-8 sm:p-10 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-xl">
-          
+
           {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary to-purple-600 text-white mb-6 shadow-lg shadow-primary/20">
@@ -135,7 +136,7 @@ export default function Login() {
             </p>
           </div>
         </div>
-        
+
         {/* Footer Text */}
         <p className="text-center text-xs text-muted-foreground mt-8 opacity-60">
           &copy; 2025 88code AI Hub. All rights reserved.

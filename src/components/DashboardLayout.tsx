@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useMenu } from '../hooks/useMenu';
-import { cn } from '../lib/utils';
 import { Drawer } from '@mui/material';
 
 // Icon mapping for menu items

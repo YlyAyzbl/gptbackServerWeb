@@ -1,24 +1,33 @@
-import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { API_BASE_URL } from '../global/config';
 
-// 创建 axios 实例
-const axiosInstance: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
 // 响应数据接口
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   code: number;
   message: string;
   data?: T;
 }
 
+// 扩展 AxiosInstance 类型以支持解包后的响应
+interface CustomAxiosInstance extends Omit<AxiosInstance, 'get' | 'post' | 'put' | 'delete' | 'patch'> {
+  get<T = unknown>(url: string, config?: InternalAxiosRequestConfig): Promise<ApiResponse<T>>;
+  post<T = unknown>(url: string, data?: unknown, config?: InternalAxiosRequestConfig): Promise<ApiResponse<T>>;
+  put<T = unknown>(url: string, data?: unknown, config?: InternalAxiosRequestConfig): Promise<ApiResponse<T>>;
+  delete<T = unknown>(url: string, config?: InternalAxiosRequestConfig): Promise<ApiResponse<T>>;
+  patch<T = unknown>(url: string, data?: unknown, config?: InternalAxiosRequestConfig): Promise<ApiResponse<T>>;
+}
+
+// 创建 axios 实例
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+}) as CustomAxiosInstance;
+
 // 请求拦截器 - 添加认证token
-axiosInstance.interceptors.request.use(
+(axiosInstance as AxiosInstance).interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -33,17 +42,17 @@ axiosInstance.interceptors.request.use(
 );
 
 // 响应拦截器 - 处理响应数据和错误
-axiosInstance.interceptors.response.use(
+(axiosInstance as AxiosInstance).interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
-    const { code, message, data } = response.data;
+    const { code, message } = response.data;
 
     // 成功响应 (code === 200 或 201)
     if (code === 200 || code === 201) {
-      return Promise.resolve(response.data);
+      return response.data as unknown as AxiosResponse;
     }
 
     // 业务逻辑错误
-    const error = new Error(message || '请求失败') as AxiosError & { code: number };
+    const error = new Error(message || '请求失败') as Error & { code: number };
     error.code = code;
     return Promise.reject(error);
   },

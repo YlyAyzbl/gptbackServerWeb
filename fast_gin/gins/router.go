@@ -49,14 +49,33 @@ func RouterInit(r *gin.Engine) {
 	r.PUT("/api/users/:id", UpdateUser)
 	r.DELETE("/api/users/:id", DeleteUser)
 
-	// 服务接口
-	r.GET("/api/services", GetServices)
+	// 服务接口 (支持完整CRUD)
+	r.GET("/api/services", GetServices)         // 兼容旧接口
+	r.GET("/api/services/list", GetServiceList) // 新的数据库接口
+	r.GET("/api/services/:id", GetServiceDetail)
+	r.POST("/api/services", CreateNewService)
+	r.PUT("/api/services/:id", UpdateServiceAPI)
+	r.DELETE("/api/services/:id", DeleteServiceAPI)
 
-	// 工单接口
-	r.GET("/api/tickets", GetSupportTickets)
+	// 工单接口 (支持完整CRUD)
+	r.GET("/api/tickets", GetSupportTickets)  // 兼容旧接口
+	r.GET("/api/tickets/list", GetTicketList) // 新的数据库接口
+	r.GET("/api/tickets/:id", GetTicketDetail)
+	r.POST("/api/tickets", CreateNewTicket)
+	r.PUT("/api/tickets/:id", UpdateTicketStatusAPI)
+	r.DELETE("/api/tickets/:id", DeleteTicketAPI)
+	r.POST("/api/tickets/:id/reply", AddReplyToTicket)
+
+	// 公告接口 (支持完整CRUD)
+	r.GET("/api/announcements", GetAnnouncementList)
+	r.GET("/api/announcements/:id", GetAnnouncementDetail)
+	r.POST("/api/announcements", CreateNewAnnouncement)
+	r.PUT("/api/announcements/:id", UpdateAnnouncementAPI)
+	r.DELETE("/api/announcements/:id", DeleteAnnouncementAPI)
 
 	// Token使用接口
-	r.GET("/api/token-usage", GetTokenUsage)
+	r.GET("/api/token-usage", GetTokenUsage)            // 兼容旧接口
+	r.GET("/api/token-usage/stats", GetTokenUsageStats) // 新的数据库接口
 
 	// 404处理
 	r.NoRoute(func(c *gin.Context) {

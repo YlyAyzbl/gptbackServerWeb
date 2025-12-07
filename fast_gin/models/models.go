@@ -64,25 +64,29 @@ type UserRequest struct {
 	Status string `json:"status" binding:"required"`
 }
 
-// 服务
-type Service struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	Uptime      string `json:"uptime"`
-	Icon        string `json:"icon"`
-	Bg          string `json:"bg"`
+// 服务 DTO (用于 API 响应)
+type ServiceDTO struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Status      string  `json:"status"`
+	Uptime      string  `json:"uptime"`
+	Icon        string  `json:"icon"`
+	Bg          string  `json:"bg"`
+	ModelID     string  `json:"model_id,omitempty"`
+	MaxTokens   int     `json:"max_tokens,omitempty"`
+	RateLimit   int     `json:"rate_limit,omitempty"`
+	Price       float64 `json:"price,omitempty"`
 }
 
 // 服务列表响应
 type ServicesResponse struct {
-	Services []Service `json:"services"`
-	Total    int       `json:"total"`
+	Services []ServiceDTO `json:"services"`
+	Total    int          `json:"total"`
 }
 
-// 支持工单
-type SupportTicket struct {
+// 支持工单 DTO (用于 API 响应)
+type SupportTicketDTO struct {
 	ID       string `json:"id"`
 	Subject  string `json:"subject"`
 	Status   string `json:"status"`
@@ -93,19 +97,19 @@ type SupportTicket struct {
 
 // 工单列表响应
 type TicketsResponse struct {
-	Tickets []SupportTicket `json:"tickets"`
-	Total   int             `json:"total"`
+	Tickets []SupportTicketDTO `json:"tickets"`
+	Total   int                `json:"total"`
 }
 
-// Token使用
-type TokenUsage struct {
+// Token使用 DTO
+type TokenUsageDTO struct {
 	Name  string `json:"name"`
 	Value int    `json:"value"`
 }
 
 // Token使用响应
 type TokenUsageResponse struct {
-	Data []TokenUsage `json:"data"`
+	Data []TokenUsageDTO `json:"data"`
 }
 
 // 通用响应

@@ -20,12 +20,14 @@ type User struct {
 	Password  string         `gorm:"size:255;not null" json:"-"` // json:"-" 不返回密码
 	Name      string         `gorm:"size:100" json:"name"`
 	Avatar    string         `gorm:"size:500" json:"avatar"`
-	Role      string         `gorm:"size:50;default:'user'" json:"role"`     // admin, user, guest
 	Status    string         `gorm:"size:20;default:'active'" json:"status"` // active, inactive, banned
 	LastLogin *time.Time     `json:"last_login"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+
+	// RBAC 关联
+	Roles []Role `gorm:"many2many:user_roles;" json:"roles,omitempty"`
 }
 
 // TableName 指定表名
@@ -77,12 +79,19 @@ func CreateUser(username, email, password, name, role string) (*User, error) {
 		Email:    email,
 		Password: hashedPassword,
 		Name:     name,
-		Role:     role,
 		Status:   "active",
 	}
 
 	if err := db.Create(&user).Error; err != nil {
 		return nil, errors.New("创建用户失败：" + err.Error())
+	}
+
+	// 分配角色（通过 RBAC 系统）
+	if role != "" {
+		var roleModel Role
+		if err := db.Where("name = ?", role).First(&roleModel).Error; err == nil {
+			db.Model(&user).Association("Roles").Append(&roleModel)
+		}
 	}
 
 	return &user, nil
@@ -247,10 +256,12 @@ func InitDefaultUsers() {
 				zap.Error(err),
 			)
 		} else {
+			// 获取用户角色名
+			roleName := u.role
 			zap.L().Info("✅ 创建账号成功",
 				zap.String("username", user.Username),
 				zap.String("id", user.ID.String()),
-				zap.String("role", user.Role),
+				zap.String("role", roleName),
 			)
 		}
 	}

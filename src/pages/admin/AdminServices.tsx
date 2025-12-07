@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, MoreVertical, X, Settings2 } from 'lucide-react';
+import { Plus, Search, Trash2, Package, X, Settings2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogActions, Button, Select, MenuItem } from '@mui/material';
 import { cn } from '../../lib/utils';
 
@@ -157,7 +157,7 @@ export default function AdminServices() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Service Management</h1>
           <p className="text-muted-foreground mt-1">Configure and manage available AI services.</p>
         </div>
-        <button 
+        <button
           onClick={() => handleOpen()}
           className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:scale-105 transition-all duration-200"
         >
@@ -225,14 +225,14 @@ export default function AdminServices() {
                   <td className="px-6 py-4 text-muted-foreground">{service.users}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
+                      <button
                         onClick={() => handleOpen(service)}
                         className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                         title="Configure Service"
                       >
                         <Settings2 className="w-4 h-4" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(service.id)}
                         className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                       >
@@ -248,8 +248,8 @@ export default function AdminServices() {
       </div>
 
       {/* Add/Edit Service Dialog */}
-      <Dialog 
-        open={open} 
+      <Dialog
+        open={open}
         onClose={handleClose}
         maxWidth="md"
         fullWidth
@@ -260,8 +260,8 @@ export default function AdminServices() {
       >
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-xl font-bold flex items-center gap-2">
-             <Settings2 className="w-5 h-5 text-primary" />
-             {editingService ? 'Configure Service' : 'New Service Configuration'}
+            <Settings2 className="w-5 h-5 text-primary" />
+            {editingService ? 'Configure Service' : 'New Service Configuration'}
           </h2>
           <button onClick={handleClose} className="p-2 hover:bg-muted rounded-full transition-colors">
             <X className="w-5 h-5 text-muted-foreground" />
@@ -269,88 +269,88 @@ export default function AdminServices() {
         </div>
         <form onSubmit={handleSave}>
           <DialogContent className="p-6 space-y-6">
-            
+
             {/* Basic Info */}
             <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Basic Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Service Name</label>
-                        <input 
-                            value={formData.name || ''}
-                            onChange={e => setFormData({...formData, name: e.target.value})}
-                            required 
-                            className="input-base"
-                            placeholder="e.g. GPT-4 API"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Category</label>
-                        <input 
-                            value={formData.category || ''}
-                            onChange={e => setFormData({...formData, category: e.target.value})}
-                            required 
-                            className="input-base"
-                            placeholder="e.g. AI Models"
-                        />
-                    </div>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Basic Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Service Name</label>
+                  <input
+                    value={formData.name || ''}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    required
+                    className="input-base"
+                    placeholder="e.g. GPT-4 API"
+                  />
                 </div>
-                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Description</label>
-                    <textarea 
-                        value={formData.description || ''}
-                        onChange={e => setFormData({...formData, description: e.target.value})}
-                        rows={2}
-                        className="flex w-full rounded-xl border border-input bg-background/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 resize-none"
-                        placeholder="Brief description of the service..."
-                    />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Category</label>
+                  <input
+                    value={formData.category || ''}
+                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                    required
+                    className="input-base"
+                    placeholder="e.g. AI Models"
+                  />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Description</label>
+                <textarea
+                  value={formData.description || ''}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  rows={2}
+                  className="flex w-full rounded-xl border border-input bg-background/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 resize-none"
+                  placeholder="Brief description of the service..."
+                />
+              </div>
             </div>
 
             {/* Technical Config */}
             <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Technical Configuration</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Model ID (API Identifier)</label>
-                        <input 
-                            value={formData.modelId || ''}
-                            onChange={e => setFormData({...formData, modelId: e.target.value})}
-                            className="input-base font-mono text-xs"
-                            placeholder="e.g. gpt-4-1106-preview"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Pricing Display</label>
-                        <input 
-                            value={formData.price || ''}
-                            onChange={e => setFormData({...formData, price: e.target.value})}
-                            required 
-                            className="input-base"
-                            placeholder="e.g. $0.03 / 1K tokens"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Max Tokens</label>
-                        <input 
-                            type="number"
-                            value={formData.maxTokens || ''}
-                            onChange={e => setFormData({...formData, maxTokens: Number(e.target.value)})}
-                            className="input-base"
-                            placeholder="4096"
-                        />
-                    </div>
-                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Rate Limit (RPM)</label>
-                        <input 
-                            type="number"
-                            value={formData.rateLimit || ''}
-                            onChange={e => setFormData({...formData, rateLimit: Number(e.target.value)})}
-                            className="input-base"
-                            placeholder="60"
-                        />
-                    </div>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Technical Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Model ID (API Identifier)</label>
+                  <input
+                    value={formData.modelId || ''}
+                    onChange={e => setFormData({ ...formData, modelId: e.target.value })}
+                    className="input-base font-mono text-xs"
+                    placeholder="e.g. gpt-4-1106-preview"
+                  />
                 </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Pricing Display</label>
+                  <input
+                    value={formData.price || ''}
+                    onChange={e => setFormData({ ...formData, price: e.target.value })}
+                    required
+                    className="input-base"
+                    placeholder="e.g. $0.03 / 1K tokens"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Max Tokens</label>
+                  <input
+                    type="number"
+                    value={formData.maxTokens || ''}
+                    onChange={e => setFormData({ ...formData, maxTokens: Number(e.target.value) })}
+                    className="input-base"
+                    placeholder="4096"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Rate Limit (RPM)</label>
+                  <input
+                    type="number"
+                    value={formData.rateLimit || ''}
+                    onChange={e => setFormData({ ...formData, rateLimit: Number(e.target.value) })}
+                    className="input-base"
+                    placeholder="60"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Status */}
@@ -358,7 +358,7 @@ export default function AdminServices() {
               <label className="text-sm font-medium">Service Status</label>
               <Select
                 value={formData.status || 'Active'}
-                onChange={e => setFormData({...formData, status: e.target.value as any})}
+                onChange={e => setFormData({ ...formData, status: e.target.value as any })}
                 fullWidth
                 variant="outlined"
                 sx={selectStyles}

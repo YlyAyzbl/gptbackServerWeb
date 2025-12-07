@@ -7,6 +7,7 @@ import apiService from '../api/apiService';
 interface TokenUsage {
   name: string;
   value: number;
+  [key: string]: string | number; // 添加索引签名以兼容 ChartDataInput
 }
 
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899'];

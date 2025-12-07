@@ -1,5 +1,4 @@
-import React from 'react';
-import { LayoutDashboard, Users, ShoppingBag, Megaphone, HeadphonesIcon, TrendingUp, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Users, ShoppingBag, Megaphone, HeadphonesIcon, TrendingUp, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import { Select, MenuItem } from '@mui/material';
 
 const selectStyles = {
@@ -13,8 +12,8 @@ const selectStyles = {
   transition: 'all 0.2s',
   height: '32px',
   '& .MuiSelect-select': {
-     paddingTop: '4px',
-     paddingBottom: '4px',
+    paddingTop: '4px',
+    paddingBottom: '4px',
   },
   '&:hover': { backgroundColor: 'hsl(var(--muted))' },
 };
@@ -113,19 +112,19 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart Area (Placeholder) */}
         <div className="lg:col-span-2 glass rounded-3xl border border-white/20 dark:border-white/5 p-6 flex flex-col justify-between min-h-[300px]">
-           <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-foreground">System Traffic</h3>
-             <Select
-               defaultValue="7days"
-               sx={selectStyles}
-               MenuProps={menuProps}
-             >
-               <MenuItem value="7days">Last 7 Days</MenuItem>
-               <MenuItem value="30days">Last 30 Days</MenuItem>
-             </Select>
+            <Select
+              defaultValue="7days"
+              sx={selectStyles}
+              MenuProps={menuProps}
+            >
+              <MenuItem value="7days">Last 7 Days</MenuItem>
+              <MenuItem value="30days">Last 30 Days</MenuItem>
+            </Select>
           </div>
           <div className="flex-1 w-full bg-gradient-to-b from-primary/5 to-transparent rounded-2xl flex items-center justify-center border border-dashed border-border">
-             <p className="text-muted-foreground text-sm">Chart Visualization Placeholder</p>
+            <p className="text-muted-foreground text-sm">Chart Visualization Placeholder</p>
           </div>
         </div>
 

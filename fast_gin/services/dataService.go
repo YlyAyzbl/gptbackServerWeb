@@ -217,27 +217,7 @@ func UpdateUserDTO(id int, req *models.UserRequest) *models.UserDTO {
 		if users[i].ID == id {
 			users[i].Name = req.Name
 			users[i].Email = req.Email
-			users[i].Role = req.Role
-			users[i].Status = req.Status
-			return &users[i]
-		}
-	}
-	return nil
-}
-
-// 删除用户
-func DeleteUser(id int) bool {
-	userMutex.Lock()
-	defer userMutex.Unlock()
-
-	for i := range users {
-		if users[i].ID == id {
-			users = append(users[:i], users[i+1:]...)
-			return true
-		}
-	}
-	return false
-}
+			users[i].Role = req.Role}
 
 // 获取服务列表
 func GetServices() []models.Service {
@@ -314,6 +294,109 @@ func GetSupportTickets() []models.SupportTicket {
 // 获取Token使用数据
 func GetTokenUsage() []models.TokenUsage {
 	return []models.TokenUsage{
+		{Name: "GPT-4", Value: 400},
+		{Name: "GPT-3.5", Value: 300},
+		{Name: "Claude 3", Value: 300},
+		{Name: "Gemini Pro", Value: 200},
+	}
+}
+
+			users[i].Status = req.Status
+			return &users[i]
+		}
+	}
+	return nil
+}
+
+// 删除用户
+func DeleteUser(id int) bool {
+	userMutex.Lock()
+	defer userMutex.Unlock()
+
+	for i := range users {
+		if users[i].ID == id {
+			users = append(users[:i], users[i+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
+// 获取服务列表
+func GetServices() []models.ServiceDTO {
+	return []models.ServiceDTO{
+		{
+			ID:          1,
+			Name:        "OpenAI GPT-4 Turbo",
+			Description: "Latest high-intelligence model with larger context window.",
+			Status:      "Active",
+			Uptime:      "99.99%",
+			Icon:        "cpu",
+			Bg:          "bg-purple-500/10",
+		},
+		{
+			ID:          2,
+			Name:        "Claude 3 Opus",
+			Description: "Most powerful model for complex reasoning and coding.",
+			Status:      "Active",
+			Uptime:      "99.95%",
+			Icon:        "zap",
+			Bg:          "bg-orange-500/10",
+		},
+		{
+			ID:          3,
+			Name:        "Gemini Pro 1.5",
+			Description: "Balanced performance and cost for general tasks.",
+			Status:      "Maintenance",
+			Uptime:      "98.50%",
+			Icon:        "globe",
+			Bg:          "bg-blue-500/10",
+		},
+		{
+			ID:          4,
+			Name:        "Mistral Large",
+			Description: "Top-tier open weights model served via API.",
+			Status:      "Active",
+			Uptime:      "99.90%",
+			Icon:        "server",
+			Bg:          "bg-emerald-500/10",
+		},
+	}
+}
+
+// 获取支持工单列表
+func GetSupportTickets() []models.SupportTicketDTO {
+	return []models.SupportTicketDTO{
+		{
+			ID:       "T-1024",
+			Subject:  "API Latency Issues with GPT-4",
+			Status:   "Open",
+			Priority: "High",
+			Created:  "2 hours ago",
+			Category: "Performance",
+		},
+		{
+			ID:       "T-1023",
+			Subject:  "Billing Inquiry for March",
+			Status:   "Resolved",
+			Priority: "Medium",
+			Created:  "1 day ago",
+			Category: "Billing",
+		},
+		{
+			ID:       "T-1022",
+			Subject:  "Request for higher rate limits",
+			Status:   "In Progress",
+			Priority: "Low",
+			Created:  "2 days ago",
+			Category: "Account",
+		},
+	}
+}
+
+// 获取Token使用数据
+func GetTokenUsage() []models.TokenUsageDTO {
+	return []models.TokenUsageDTO{
 		{Name: "GPT-4", Value: 400},
 		{Name: "GPT-3.5", Value: 300},
 		{Name: "Claude 3", Value: 300},

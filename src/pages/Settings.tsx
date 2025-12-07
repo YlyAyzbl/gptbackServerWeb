@@ -1,14 +1,14 @@
 import React from 'react';
-import { User, Lock, Bell, CreditCard, Save, Check } from 'lucide-react';
+import { User, Lock, Bell, CreditCard, Save } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useMenu } from '../hooks/useMenu';
 
 // Icon mapping for settings tabs
 const settingsIconMap: Record<string, React.ReactNode> = {
-  'user': <User className="w-4 h-4" />,
-  'lock': <Lock className="w-4 h-4" />,
-  'credit-card': <CreditCard className="w-4 h-4" />,
-  'bell': <Bell className="w-4 h-4" />,
+    'user': <User className="w-4 h-4" />,
+    'lock': <Lock className="w-4 h-4" />,
+    'credit-card': <CreditCard className="w-4 h-4" />,
+    'bell': <Bell className="w-4 h-4" />,
 };
 
 export default function Settings() {

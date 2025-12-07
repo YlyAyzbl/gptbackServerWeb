@@ -60,6 +60,12 @@ func login(c *gin.Context) {
 		return
 	}
 
+	// 获取用户角色
+	roleName := "user"
+	if len(user.Roles) > 0 {
+		roleName = user.Roles[0].Name
+	}
+
 	token := utils.CreateJWT(loginData.Username)
 	c.JSON(http.StatusOK, ResponeResult.OkResult(gin.H{
 		"token": token,
@@ -69,7 +75,7 @@ func login(c *gin.Context) {
 			"username": user.Username,
 			"email":    user.Email,
 			"name":     user.Name,
-			"role":     user.Role,
+			"role":     roleName,
 		},
 	}))
 }
@@ -103,6 +109,13 @@ func register(c *gin.Context) {
 
 	// 注册成功，返回用户信息和Token
 	token := utils.CreateJWT(user.Username)
+
+	// 获取用户角色
+	regRoleName := "user"
+	if len(user.Roles) > 0 {
+		regRoleName = user.Roles[0].Name
+	}
+
 	c.JSON(http.StatusCreated, ResponeResult.OkResult(gin.H{
 		"message": "用户注册成功",
 		"token":   token,
@@ -111,7 +124,7 @@ func register(c *gin.Context) {
 			"username": user.Username,
 			"email":    user.Email,
 			"name":     user.Name,
-			"role":     user.Role,
+			"role":     regRoleName,
 		},
 	}))
 }

@@ -80,13 +80,34 @@ func main() {
 	}
 	defer database.Close()
 
-	// 自动迁移数据库表结构
-	if err := database.AutoMigrate(&models.User{}); err != nil {
+	// 自动迁移数据库表结构 - 包含所有模型
+	if err := database.AutoMigrate(
+		// RBAC 模型
+		&models.Role{},
+		&models.Permission{},
+		&models.User{},
+		// 业务模型
+		&models.ServiceModel{},
+		&models.SupportTicket{},
+		&models.TicketReply{},
+		&models.Announcement{},
+		&models.TokenUsageRecord{},
+		&models.APIKey{},
+	); err != nil {
 		zap.L().Fatal("数据库迁移失败", zap.Error(err))
 	}
 
+	// 初始化 RBAC 权限系统（必须在用户之前）
+	models.InitDefaultRBAC()
+
 	// 初始化默认测试账号
 	models.InitDefaultUsers()
+
+	// 初始化业务数据
+	models.InitDefaultServices()
+	models.InitDefaultTickets()
+	models.InitDefaultAnnouncements()
+	models.InitDefaultTokenUsage()
 
 	// 打印测试账号信息
 	PrintTestAccounts()
