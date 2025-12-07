@@ -1,18 +1,56 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Wallet, BarChart3, TrendingUp, Sparkles } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { Wallet, BarChart3, TrendingUp, Sparkles, AlertCircle } from 'lucide-react';
+import { useApiCall } from '../hooks/useApiCall';
+import apiService from '../api/apiService';
 
-const data = [
-  { name: 'GPT-4', value: 400 },
-  { name: 'GPT-3.5', value: 300 },
-  { name: 'Claude 3', value: 300 },
-  { name: 'Gemini Pro', value: 200 },
-];
+interface TokenUsage {
+  name: string;
+  value: number;
+}
 
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899'];
 
 export default function AiTokenUsage() {
+  const { data: tokenData, loading, error } = useApiCall<{ data: TokenUsage[] }>(
+    () => apiService.getTokenUsage(),
+    true // auto-fetch on mount
+  );
+
+  const data = tokenData?.data || [];
+
+  // Calculate statistics from data
+  const totalTokens = data.reduce((sum, item) => sum + item.value, 0);
+  const mostPopularModel = data.length > 0
+    ? data.reduce((max, item) => item.value > max.value ? item : max, data[0]).name
+    : 'N/A';
+  const estimatedCost = (totalTokens * 0.00003).toFixed(2); // Example: $0.03 per 1000 tokens
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading token usage data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="text-center glass rounded-2xl p-8 max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Failed to load token usage</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -91,7 +129,9 @@ export default function AiTokenUsage() {
                 <DatabaseIcon className="w-5 h-5" />
                 <span className="text-sm font-medium">Total Tokens Used</span>
               </div>
-              <div className="text-4xl font-black text-primary tracking-tight">1,200,000</div>
+              <div className="text-4xl font-black text-primary tracking-tight">
+                {totalTokens.toLocaleString()}
+              </div>
             </div>
 
             <div className="p-6 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 dark:border-white/5 backdrop-blur-md">
@@ -99,7 +139,9 @@ export default function AiTokenUsage() {
                 <Wallet className="w-5 h-5" />
                 <span className="text-sm font-medium">Estimated Cost</span>
               </div>
-              <div className="text-4xl font-black text-emerald-500 tracking-tight">$45.20</div>
+              <div className="text-4xl font-black text-emerald-500 tracking-tight">
+                ${estimatedCost}
+              </div>
             </div>
 
             <div className="p-6 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 dark:border-white/5 backdrop-blur-md">
@@ -107,7 +149,9 @@ export default function AiTokenUsage() {
                 <TrendingUp className="w-5 h-5" />
                 <span className="text-sm font-medium">Most Popular Model</span>
               </div>
-              <div className="text-4xl font-black text-purple-500 tracking-tight">GPT-4</div>
+              <div className="text-4xl font-black text-purple-500 tracking-tight">
+                {mostPopularModel}
+              </div>
             </div>
           </div>
         </div>
@@ -134,5 +178,5 @@ function DatabaseIcon(props: React.SVGProps<SVGSVGElement>) {
       <path d="M3 5V19A9 3 0 0 0 21 19V5" />
       <path d="M3 12A9 3 0 0 0 21 12" />
     </svg>
-  )
+  );
 }

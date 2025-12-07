@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, MoreHorizontal, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogActions, Button, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Plus, Search, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogActions, Button, Select, MenuItem } from '@mui/material';
 import { cn } from '../lib/utils';
+import { useApiCall } from '../hooks/useApiCall';
+import apiService from '../api/apiService';
 
 interface User {
   id: number;
@@ -10,14 +12,6 @@ interface User {
   role: string;
   status: 'Active' | 'Inactive' | 'Suspended';
 }
-
-const initialRows: User[] = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active' },
-  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'User', status: 'Inactive' },
-  { id: 3, name: 'Charlie Brown', email: 'charlie@example.com', role: 'User', status: 'Active' },
-  { id: 4, name: 'Diana Prince', email: 'diana@example.com', role: 'Editor', status: 'Active' },
-  { id: 5, name: 'Evan Wright', email: 'evan@example.com', role: 'User', status: 'Suspended' },
-];
 
 // Custom styles for MUI Select to match Tailwind 'input-base'
 const selectStyles = {
@@ -31,9 +25,9 @@ const selectStyles = {
     border: 'none',
   },
   backgroundColor: 'rgba(var(--background), 0.5)',
-  borderRadius: '0.75rem', // rounded-xl
+  borderRadius: '0.75rem',
   border: '1px solid hsl(var(--input))',
-  fontSize: '0.875rem', // text-sm
+  fontSize: '0.875rem',
   transition: 'all 0.2s',
   '&:hover': {
     borderColor: 'hsl(var(--ring))',
@@ -68,12 +62,18 @@ const menuProps = {
 };
 
 export default function UserManagement() {
-  const [rows, setRows] = useState<User[]>(initialRows);
   const [open, setOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-
-  // Form State
   const [formData, setFormData] = useState<Partial<User>>({});
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Fetch users data
+  const { data: usersData, loading, error, fetch: refetchUsers } = useApiCall<{ users: User[]; total: number }>(
+    () => apiService.getUsers(),
+    true // auto-fetch on mount
+  );
+
+  const users = usersData?.users || [];
 
   const handleOpen = (user?: User) => {
     if (user) {
@@ -92,8 +92,10 @@ export default function UserManagement() {
     setFormData({});
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setActionLoading(true);
+
     const userData = {
       name: formData.name!,
       email: formData.email!,
@@ -101,19 +103,71 @@ export default function UserManagement() {
       status: (formData.status || 'Active') as 'Active' | 'Inactive' | 'Suspended',
     };
 
-    if (editingUser) {
-      setRows(rows.map(row => row.id === editingUser.id ? { ...row, ...userData } : row));
-    } else {
-      setRows([...rows, { id: rows.length + 1, ...userData }]);
+    try {
+      if (editingUser) {
+        // Update existing user
+        await apiService.updateUser(editingUser.id, userData);
+      } else {
+        // Create new user
+        await apiService.createUser(userData);
+      }
+
+      // Refetch users list
+      await refetchUsers();
+      handleClose();
+    } catch (error) {
+      console.error('Failed to save user:', error);
+      alert('Failed to save user. Please try again.');
+    } finally {
+      setActionLoading(false);
     }
-    handleClose();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      setRows(rows.filter(row => row.id !== id));
+      setActionLoading(true);
+      try {
+        await apiService.deleteUser(id);
+        await refetchUsers();
+      } catch (error) {
+        console.error('Failed to delete user:', error);
+        alert('Failed to delete user. Please try again.');
+      } finally {
+        setActionLoading(false);
+      }
     }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading users...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="text-center glass rounded-2xl p-8 max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Failed to load users</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <button
+            onClick={() => refetchUsers()}
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -124,7 +178,8 @@ export default function UserManagement() {
         </div>
         <button
           onClick={() => handleOpen()}
-          className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:scale-105 transition-all duration-200"
+          disabled={actionLoading}
+          className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add User
@@ -160,7 +215,7 @@ export default function UserManagement() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {rows.map((row) => (
+              {users.map((row) => (
                 <tr key={row.id} className="group hover:bg-muted/30 transition-colors">
                   <td className="px-6 py-4 font-medium text-muted-foreground">#{row.id}</td>
                   <td className="px-6 py-4">
@@ -194,15 +249,17 @@ export default function UserManagement() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
+                      <button
                         onClick={() => handleOpen(row)}
-                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        disabled={actionLoading}
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-50"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(row.id)}
-                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                        disabled={actionLoading}
+                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-50"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -214,9 +271,9 @@ export default function UserManagement() {
           </table>
         </div>
 
-        {/* Pagination (Mock) */}
+        {/* Pagination */}
         <div className="p-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground bg-white/20 dark:bg-black/10 backdrop-blur-md">
-          <span>Showing 1 to {rows.length} of {rows.length} entries</span>
+          <span>Showing 1 to {users.length} of {usersData?.total || 0} entries</span>
           <div className="flex gap-1">
             <button className="px-3 py-1 rounded-md hover:bg-muted disabled:opacity-50" disabled>Previous</button>
             <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground">1</button>
@@ -226,8 +283,8 @@ export default function UserManagement() {
       </div>
 
       {/* Add/Edit User Dialog */}
-      <Dialog 
-        open={open} 
+      <Dialog
+        open={open}
         onClose={handleClose}
         PaperProps={{
           className: "bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl w-full max-w-md shadow-2xl",
@@ -237,30 +294,31 @@ export default function UserManagement() {
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-xl font-bold">{editingUser ? 'Edit User' : 'Add New User'}</h2>
           <button onClick={handleClose} className="p-2 hover:bg-muted rounded-full transition-colors">
-            <X className="w-5 h-5 text-muted-foreground" />
+            <span className="sr-only">Close</span>
+            ✕
           </button>
         </div>
         <form onSubmit={handleSave}>
           <DialogContent className="space-y-4 p-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Name</label>
-              <input 
-                name="name" 
+              <input
+                name="name"
                 value={formData.name || ''}
                 onChange={e => setFormData({...formData, name: e.target.value})}
-                required 
+                required
                 className="input-base"
                 placeholder="John Doe"
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <input 
-                name="email" 
+              <input
+                name="email"
                 type="email"
                 value={formData.email || ''}
                 onChange={e => setFormData({...formData, email: e.target.value})}
-                required 
+                required
                 className="input-base"
                 placeholder="john@example.com"
               />
@@ -297,9 +355,11 @@ export default function UserManagement() {
             </div>
           </DialogContent>
           <DialogActions className="p-6 border-t border-border">
-            <Button onClick={handleClose} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl px-4">Cancel</Button>
-            <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 py-2">
-              {editingUser ? 'Save Changes' : 'Create User'}
+            <Button onClick={handleClose} disabled={actionLoading} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl px-4">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={actionLoading} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 py-2">
+              {actionLoading ? 'Saving...' : editingUser ? 'Save Changes' : 'Create User'}
             </Button>
           </DialogActions>
         </form>

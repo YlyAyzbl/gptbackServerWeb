@@ -9,8 +9,7 @@ import {
   ArrowDown
 } from 'lucide-react';
 import { cn, CHART_TOOLTIP_STYLE, CHART_ITEM_STYLE } from '../lib/utils';
-import { useModels } from '../hooks/useModels';
-import { useStats } from '../hooks/useStats';
+import { useDashboard } from '../hooks/useDashboard';
 
 // Icon mapping
 const iconMap: Record<string, React.ReactNode> = {
@@ -56,21 +55,8 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, isPositive, i
 );
 
 
-const trendData = [
-  { date: '12/01', requests: 4000, tokens: 240000 },
-  { date: '12/02', requests: 3000, tokens: 139800 },
-  { date: '12/03', requests: 2000, tokens: 980000 },
-  { date: '12/04', requests: 2780, tokens: 390800 },
-  { date: '12/05', requests: 1890, tokens: 480000 },
-  { date: '12/06', requests: 2390, tokens: 380000 },
-  { date: '12/07', requests: 3490, tokens: 430000 },
-];
-
-// Remove hardcoded data - will use config instead
-
 export default function DashboardHome() {
-  const { models, chartColors } = useModels();
-  const { dashboardStats } = useStats();
+  const { models, chartColors, dashboardStats, trendData, loading, error } = useDashboard();
   const [period, setPeriod] = React.useState('7');
   const [granularity, setGranularity] = React.useState('day');
   const [modelPeriod, setModelPeriod] = React.useState('daily');
@@ -88,6 +74,31 @@ export default function DashboardHome() {
     ...stat,
     icon: iconMap[stat.icon],
   }));
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="text-center glass rounded-2xl p-8 max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Failed to load dashboard</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
