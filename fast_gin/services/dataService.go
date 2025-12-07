@@ -5,16 +5,16 @@ import (
 	"sync"
 )
 
-// 内存中的用户数据
+// 内存中的用户数据（用于模拟 API 数据）
 var (
-	users = []models.User{
+	users = []models.UserDTO{
 		{ID: 1, Name: "Alice Johnson", Email: "alice@example.com", Role: "Admin", Status: "Active"},
 		{ID: 2, Name: "Bob Smith", Email: "bob@example.com", Role: "User", Status: "Inactive"},
 		{ID: 3, Name: "Charlie Brown", Email: "charlie@example.com", Role: "User", Status: "Active"},
 		{ID: 4, Name: "Diana Prince", Email: "diana@example.com", Role: "Editor", Status: "Active"},
 		{ID: 5, Name: "Evan Wright", Email: "evan@example.com", Role: "User", Status: "Suspended"},
 	}
-	userMutex sync.RWMutex
+	userMutex  sync.RWMutex
 	nextUserID = 6
 )
 
@@ -167,17 +167,17 @@ func GetDashboardData() *models.DashboardResponse {
 }
 
 // 获取用户列表
-func GetUsers() []models.User {
+func GetUsers() []models.UserDTO {
 	userMutex.RLock()
 	defer userMutex.RUnlock()
 
-	result := make([]models.User, len(users))
+	result := make([]models.UserDTO, len(users))
 	copy(result, users)
 	return result
 }
 
 // 获取单个用户
-func GetUserByID(id int) *models.User {
+func GetUserByID(id int) *models.UserDTO {
 	userMutex.RLock()
 	defer userMutex.RUnlock()
 
@@ -189,12 +189,12 @@ func GetUserByID(id int) *models.User {
 	return nil
 }
 
-// 创建用户
-func CreateUser(req *models.UserRequest) *models.User {
+// 创建用户 DTO
+func CreateUserDTO(req *models.UserRequest) *models.UserDTO {
 	userMutex.Lock()
 	defer userMutex.Unlock()
 
-	newUser := models.User{
+	newUser := models.UserDTO{
 		ID:     nextUserID,
 		Name:   req.Name,
 		Email:  req.Email,
@@ -208,8 +208,8 @@ func CreateUser(req *models.UserRequest) *models.User {
 	return &newUser
 }
 
-// 更新用户
-func UpdateUser(id int, req *models.UserRequest) *models.User {
+// 更新用户 DTO
+func UpdateUserDTO(id int, req *models.UserRequest) *models.UserDTO {
 	userMutex.Lock()
 	defer userMutex.Unlock()
 

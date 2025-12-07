@@ -7,12 +7,24 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// DatabaseConfig 数据库配置
+type DatabaseConfig struct {
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	DBName   string `yaml:"dbname"`
+	SSLMode  string `yaml:"sslmode"`
+	TimeZone string `yaml:"timezone"`
+}
+
 // 定义配置结构体
 type Config struct {
 	Server struct {
 		Port string `yaml:"port"`
 		Host string `yaml:"host"`
 	} `yaml:"server"`
+	Database DatabaseConfig `yaml:"database"`
 }
 
 // 全局配置变量

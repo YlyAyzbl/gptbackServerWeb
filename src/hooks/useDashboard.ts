@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useApiCall } from './useApiCall';
 import apiService from '../api/apiService';
 
@@ -53,10 +54,14 @@ export interface DashboardData {
 
 /**
  * Hook to fetch dashboard data from API
+ * 使用 useCallback 包装 API 函数避免不必要的重复调用
  */
 export const useDashboard = () => {
+  // 使用 useCallback 确保函数引用稳定
+  const fetchDashboard = useCallback(() => apiService.getDashboardData(), []);
+
   const { data, loading, error, fetch: refetch } = useApiCall<DashboardData>(
-    () => apiService.getDashboardData(),
+    fetchDashboard,
     true // auto-fetch on mount
   );
 

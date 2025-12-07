@@ -2,6 +2,7 @@ package global
 
 import (
 	"fmt"
+	"macg/core"
 	"macg/utils/rsautils"
 	"strings"
 )
@@ -11,10 +12,25 @@ var UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 var base65Chars = "g50CuLviWF3HRPcnTVAhxGq7_49wfJZM6N1BdsYK2DSzQEtUk8p/eOaIXyo+mjlrb"
 var base65Lookup = make(map[rune]int)
 
+// AppConfig 全局应用配置
+var AppConfig *AppConfigType
+
+// AppConfigType 应用配置类型
+type AppConfigType struct {
+	Database core.DatabaseConfig
+}
+
 func init() {
 	// base65 编码表
 	for i, c := range base65Chars {
 		base65Lookup[c] = i
+	}
+}
+
+// InitGlobalConfig 初始化全局配置
+func InitGlobalConfig() {
+	AppConfig = &AppConfigType{
+		Database: core.Cfg.Database,
 	}
 }
 

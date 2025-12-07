@@ -37,6 +37,7 @@ func RouterInit(r *gin.Engine) {
 
 	// 认证接口
 	r.POST("/api/login", login)
+	r.POST("/api/register", register)
 
 	// 仪表板接口
 	r.GET("/api/dashboard", GetDashboardData)

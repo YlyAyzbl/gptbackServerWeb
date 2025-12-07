@@ -2,14 +2,14 @@ package models
 
 // 仪表板统计
 type DashboardStat struct {
-	ID                 string `json:"id"`
-	Title              string `json:"title"`
-	Value              string `json:"value"`
-	Change             string `json:"change"`
-	IsPositive         bool   `json:"isPositive"`
-	Icon               string `json:"icon"`
-	IconColorClass     string `json:"iconColorClass"`
-	IconBgClass        string `json:"iconBgClass"`
+	ID             string `json:"id"`
+	Title          string `json:"title"`
+	Value          string `json:"value"`
+	Change         string `json:"change"`
+	IsPositive     bool   `json:"isPositive"`
+	Icon           string `json:"icon"`
+	IconColorClass string `json:"iconColorClass"`
+	IconBgClass    string `json:"iconBgClass"`
 }
 
 // 趋势数据
@@ -29,20 +29,20 @@ type DashboardResponse struct {
 
 // AI模型
 type AIModel struct {
-	ID                string            `json:"id"`
-	Name              string            `json:"name"`
-	Provider          string            `json:"provider"`
-	Category          string            `json:"category"`
-	Description       string            `json:"description"`
-	Icon              string            `json:"icon"`
-	Color             map[string]string `json:"color"`
-	BackgroundColor   map[string]string `json:"backgroundColor"`
-	TextColor         map[string]string `json:"textColor"`
-	Stats             map[string]string `json:"stats"`
+	ID              string            `json:"id"`
+	Name            string            `json:"name"`
+	Provider        string            `json:"provider"`
+	Category        string            `json:"category"`
+	Description     string            `json:"description"`
+	Icon            string            `json:"icon"`
+	Color           map[string]string `json:"color"`
+	BackgroundColor map[string]string `json:"backgroundColor"`
+	TextColor       map[string]string `json:"textColor"`
+	Stats           map[string]string `json:"stats"`
 }
 
-// 用户
-type User struct {
+// 用户 DTO (用于 API 响应)
+type UserDTO struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Email  string `json:"email"`
@@ -52,8 +52,8 @@ type User struct {
 
 // 用户列表响应
 type UsersResponse struct {
-	Users []User `json:"users"`
-	Total int    `json:"total"`
+	Users []UserDTO `json:"users"`
+	Total int       `json:"total"`
 }
 
 // 用户创建/更新请求

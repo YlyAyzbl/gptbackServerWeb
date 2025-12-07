@@ -81,7 +81,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	zap.L().Info("创建用户", zap.String("name", req.Name), zap.String("email", req.Email))
-	user := services.CreateUser(&req)
+	user := services.CreateUserDTO(&req)
 	c.JSON(http.StatusCreated, models.Response{
 		Code:    201,
 		Message: "user created successfully",
@@ -113,7 +113,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	zap.L().Info("更新用户", zap.Int("id", id), zap.String("name", req.Name))
-	user := services.UpdateUser(id, &req)
+	user := services.UpdateUserDTO(id, &req)
 	if user == nil {
 		zap.L().Warn("用户未找到", zap.Int("id", id))
 		c.JSON(http.StatusNotFound, models.Response{
